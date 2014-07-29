@@ -27,14 +27,14 @@ public:
         Create(parent, id, pos, size, style, name);
     }
 
-    virtual ~wxToolBar();
-
     bool Create(wxWindow *parent,
                 wxWindowID id,
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize,
                 long style = wxNO_BORDER | wxTB_HORIZONTAL,
                 const wxString& name = wxToolBarNameStr);
+
+    virtual ~wxToolBar();
 
     virtual wxToolBarToolBase *FindToolForPosition(wxCoord x, wxCoord y) const;
 
@@ -66,6 +66,8 @@ private:
     QToolBar *GetQToolBar() const { return static_cast<QToolBar *>(m_qtWindow); }
 
     Qt::ToolButtonStyle GetButtonStyle();
+    
+    DECLARE_DYNAMIC_CLASS(wxToolBar)
 };
 
 #endif // _WX_QT_TOOLBAR_H_

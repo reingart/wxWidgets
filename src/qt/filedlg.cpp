@@ -70,8 +70,6 @@ wxFileDialog::wxFileDialog
            wildCard, style, pos, sz, name);
 }
 
-wxFileDialog::~wxFileDialog() {}
-
 bool wxFileDialog::Create(wxWindow *parent, const wxString& message, const wxString& defaultDir,
                           const wxString& defaultFile, const wxString& wildCard, long style,
                           const wxPoint& pos, const wxSize& sz, const wxString& name)

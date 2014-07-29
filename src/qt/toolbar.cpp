@@ -88,9 +88,6 @@ void wxQtToolButton::enterEvent( QEvent *WXUNUSED(event) )
     toolbar->OnMouseEnter( handler->GetId() );
 }
 
-// is this needed?
-//IMPLEMENT_DYNAMIC_CLASS(wxToolBar, wxControl)
-
 void wxToolBarTool::SetLabel( const wxString &label )
 {
     wxToolBarToolBase::SetLabel( label );
@@ -121,13 +118,7 @@ void wxToolBarTool::SetToolTip()
     m_qtToolButton->setToolTip(wxQtConvertString( GetShortHelp() ));
 }
 
-wxToolBar::~wxToolBar()
-{
-    /* the qt toolbar and our tools list are competing for who gets
-       to delete the tools, so remove them from the QToolBar here
-       (which also ensures we won't get any more events from them */
-    GetQToolBar()->clear();
-}
+IMPLEMENT_DYNAMIC_CLASS(wxToolBar, wxControl)
 
 bool wxToolBar::Create(wxWindow *parent, wxWindowID id, const wxPoint& pos,
                        const wxSize& size, long style, const wxString& name)
@@ -159,6 +150,14 @@ bool wxToolBar::Create(wxWindow *parent, wxWindowID id, const wxPoint& pos,
     // this there some reason we don't use QtCreateControl
 
     return wxWindowBase::CreateBase( parent, id, pos, size, style, wxDefaultValidator, name );
+}
+
+wxToolBar::~wxToolBar()
+{
+    /* the qt toolbar and our tools list are competing for who gets
+       to delete the tools, so remove them from the QToolBar here
+       (which also ensures we won't get any more events from them */
+    GetQToolBar()->clear();
 }
 
 wxToolBarToolBase *wxToolBar::FindToolForPosition(wxCoord WXUNUSED(x),
