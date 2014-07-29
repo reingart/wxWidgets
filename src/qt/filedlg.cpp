@@ -24,55 +24,66 @@ public:
                     const wxString& message, const wxString& defaultDir,
                     const wxString& defaultFile, const wxString& wildCard, long style )
         : wxQtEventSignalHandler(parent, handler)
-        {
-            setLabelText(QFileDialog::LookIn, wxQtConvertString(message));
-            setDirectory(wxQtConvertString(defaultDir));
-            selectFile(wxQtConvertString(defaultFile));
+    {
+        setLabelText(QFileDialog::LookIn, wxQtConvertString(message));
+        setDirectory(wxQtConvertString(defaultDir));
+        selectFile(wxQtConvertString(defaultFile));
 
-            SetWildcard(wildCard);
+        SetWildcard(wildCard);
 
-            if (style & wxFD_FILE_MUST_EXIST)
-                setFileMode(ExistingFile);
-            else if (style & wxFD_MULTIPLE)
-                setFileMode(ExistingFiles);
+        if (style & wxFD_FILE_MUST_EXIST)
+            setFileMode(ExistingFile);
+        else if (style & wxFD_MULTIPLE)
+            setFileMode(ExistingFiles);
 
-            if (style & wxFD_SAVE)
-                setAcceptMode(AcceptSave);
+        if (style & wxFD_SAVE)
+            setAcceptMode(AcceptSave);
             
-            if (style & wxFD_CHANGE_DIR)
-                connect(this, &QDialog::accepted, this, &wxQtFileDialog::changeDirectory);
-        }
-
+        if (style & wxFD_CHANGE_DIR)
+            connect(this, &QDialog::accepted, this, &wxQtFileDialog::changeDirectory);
+    }
 
     void SetWildcard(const wxString& wildCard)
-        {
-            QStringList wildCards = wxQtConvertString(wildCard).split("|");
-            QStringList filters;
-            for (int i=0; i<wildCards.size(); i+=2)
-                filters += wildCards.at(i);
+    {
+        QStringList wildCards = wxQtConvertString(wildCard).split("|");
+        QStringList filters;
+        for (int i=0; i<wildCards.size(); i+=2)
+            filters += wildCards.at(i);
 
-            setNameFilters(filters);
-        }
+        setNameFilters(filters);
+    }
 
-    void changeDirectory() {
+    void changeDirectory()
+    {
         wxSetWorkingDirectory(wxQtConvertString(directory().absolutePath()));
     }
 };
 
 IMPLEMENT_DYNAMIC_CLASS(wxFileDialog, wxDialog)
 
-wxFileDialog::wxFileDialog
-(wxWindow *parent, const wxString& message, const wxString& defaultDir,
- const wxString& defaultFile, const wxString& wildCard, long style,
- const wxPoint& pos, const wxSize& sz, const wxString& name)
+wxFileDialog::wxFileDialog(wxWindow *parent,
+                           const wxString& message,
+                           const wxString& defaultDir,
+                           const wxString& defaultFile,
+                           const wxString& wildCard,
+                           long style,
+                           const wxPoint& pos,
+                           const wxSize& sz,
+                           const wxString& name)
 {
     Create(parent, message, defaultDir, defaultFile,
            wildCard, style, pos, sz, name);
 }
 
-bool wxFileDialog::Create(wxWindow *parent, const wxString& message, const wxString& defaultDir,
-                          const wxString& defaultFile, const wxString& wildCard, long style,
-                          const wxPoint& pos, const wxSize& sz, const wxString& name)
+bool wxFileDialog::Create(wxWindow *parent,
+                          const wxString& message,
+                          const wxString& defaultDir,
+                          const wxString& defaultFile,
+                          const wxString& wildCard,
+                          long style,
+                          const wxPoint& pos,
+                          const wxSize& sz,
+                          const wxString& name)
 {
     m_qtWindow = new wxQtFileDialog( parent, this, message, defaultDir,
                                      defaultFile, wildCard, style);
@@ -174,12 +185,15 @@ QFileDialog *wxFileDialog::GetQFileDialog() const
 class wxQtDirDialog : public wxQtFileDialog
 {
 public:
-    wxQtDirDialog(wxWindow *parent, wxDialog *handler,  const wxString& message,
-                  const wxString& defaultPath, long style )
+    wxQtDirDialog(wxWindow *parent,
+                  wxDialog *handler,
+                  const wxString& message,
+                  const wxString& defaultPath,
+                  long style )
+
         : wxQtFileDialog( parent, handler, message, defaultPath, "", "",
                           (style & wxDD_DIR_MUST_EXIST ? wxFD_FILE_MUST_EXIST : 0) |
                           (style & wxDD_CHANGE_DIR ? wxFD_CHANGE_DIR : 0 ))
-
         {
             setOption(ShowDirsOnly);
         }
@@ -187,14 +201,24 @@ public:
 
 IMPLEMENT_DYNAMIC_CLASS(wxDirDialog, wxDialog)
 
-wxDirDialog::wxDirDialog(wxWindow *parent, const wxString& message, const wxString& defaultPath,
-                         long style, const wxPoint& pos, const wxSize& size, const wxString& name)
+wxDirDialog::wxDirDialog(wxWindow *parent,
+                         const wxString& message,
+                         const wxString& defaultPath,
+                         long style,
+                         const wxPoint& pos,
+                         const wxSize& size,
+                         const wxString& name)
 {
     Create(parent, message, defaultPath, style, pos, size, name);
 }
 
-bool wxDirDialog::Create(wxWindow *parent, const wxString& message, const wxString& defaultPath,
-                         long style, const wxPoint& pos, const wxSize& size, const wxString& name)
+bool wxDirDialog::Create(wxWindow *parent,
+                         const wxString& message,
+                         const wxString& defaultPath,
+                         long style,
+                         const wxPoint& pos,
+                         const wxSize& size,
+                         const wxString& name)
 {
     m_qtWindow = new wxQtDirDialog( parent, this, message, defaultPath, style);
     return wxTopLevelWindow::Create( parent, wxID_ANY, message, pos, size, style, name );

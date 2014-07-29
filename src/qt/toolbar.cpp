@@ -20,9 +20,16 @@ class wxQtToolButton;
 class wxToolBarTool : public wxToolBarToolBase
 {
 public:
-    wxToolBarTool(wxToolBar *tbar, int id, const wxString& label, const wxBitmap& bitmap1,
-                  const wxBitmap& bitmap2, wxItemKind kind, wxObject *clientData,
-                  const wxString& shortHelpString, const wxString& longHelpString)
+    wxToolBarTool(wxToolBar *tbar,
+                  int id,
+                  const wxString& label,
+                  const wxBitmap& bitmap1,
+                  const wxBitmap& bitmap2,
+                  wxItemKind kind,
+                  wxObject *clientData,
+                  const wxString& shortHelpString,
+                  const wxString& longHelpString)
+
         : wxToolBarToolBase(tbar, id, label, bitmap1, bitmap2, kind,
                             clientData, shortHelpString, longHelpString)
     {
