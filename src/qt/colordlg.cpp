@@ -34,7 +34,7 @@ bool wxColourDialog::Create(wxWindow *parent, wxColourData *data )
 
     GetQColorDialog()->setCurrentColor(s_data.GetColour().GetHandle());
 
-    return wxTopLevelWindow::Create( parent, wxID_ANY, "Color Dialog");
+    return wxTopLevelWindow::Create( parent, wxID_ANY, "");
 }
 
 wxColourData &wxColourDialog::GetColourData()
