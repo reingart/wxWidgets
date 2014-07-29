@@ -64,7 +64,8 @@ private:
 void wxQtToolButton::mouseReleaseEvent( QMouseEvent *event )
 {
     QToolButton::mouseReleaseEvent(event);
-    if(event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton)
+    {
         wxToolBarTool *handler = GetHandler();
         wxToolBarBase *toolbar = handler->GetToolBar();
         toolbar->OnLeftClick( handler->GetId(), isCheckable() ? 1 : 0 );
@@ -74,7 +75,8 @@ void wxQtToolButton::mouseReleaseEvent( QMouseEvent *event )
 void wxQtToolButton::mousePressEvent( QMouseEvent *event )
 {
     QToolButton::mousePressEvent(event);
-    if(event->button() == Qt::RightButton) {
+    if (event->button() == Qt::RightButton)
+    {
         wxToolBarTool *handler = GetHandler();
         wxToolBarBase *toolbar = handler->GetToolBar();
         toolbar->OnRightClick( handler->GetId(), event->x(), event->y() );
@@ -92,7 +94,7 @@ void wxToolBarTool::SetLabel( const wxString &label )
 {
     wxToolBarToolBase::SetLabel( label );
 
-    if(m_qtToolButton)
+    if (m_qtToolButton)
         m_qtToolButton->setText(wxQtConvertString( label ));
 }
 
@@ -132,18 +134,19 @@ bool wxToolBar::Create(wxWindow *parent, wxWindowID id, const wxPoint& pos,
     // The ToolBar must attach to a QMainWindow, so try parent
     QObject *handle = parent->GetHandle();
     QMainWindow *mainwindow = NULL;
-    while(!mainwindow) {
+    while (!mainwindow)
+    {
         mainwindow = qobject_cast<QMainWindow*>(handle);
-        if(!handle)
+        if (!handle)
             wxFAIL_MSG( wxT("wxToolBar::QtCreate() parent not a QMainWindow"));
         handle = handle->parent();
     }
 
     int area = 0;
-    if(HasFlag(wxTB_LEFT))   area |= Qt::LeftToolBarArea;
-    if(HasFlag(wxTB_RIGHT))  area |= Qt::RightToolBarArea;
-    if(HasFlag(wxTB_TOP))    area |= Qt::TopToolBarArea;
-    if(HasFlag(wxTB_BOTTOM)) area |= Qt::BottomToolBarArea;
+    if (HasFlag(wxTB_LEFT))   area |= Qt::LeftToolBarArea;
+    if (HasFlag(wxTB_RIGHT))  area |= Qt::RightToolBarArea;
+    if (HasFlag(wxTB_TOP))    area |= Qt::TopToolBarArea;
+    if (HasFlag(wxTB_BOTTOM)) area |= Qt::BottomToolBarArea;
 
     mainwindow->addToolBar((Qt::ToolBarArea)area, GetQToolBar());
 
@@ -184,7 +187,7 @@ void wxToolBar::SetWindowStyleFlag( long style )
           i != m_tools.end();         ++i )
     {
         wxToolBarTool* tool = static_cast<wxToolBarTool*>(*i);
-        if(!tool->m_qtToolButton)
+        if (!tool->m_qtToolButton)
             continue;
 
         tool->m_qtToolButton->setToolButtonStyle(buttonStyle);
@@ -201,7 +204,7 @@ bool wxToolBar::Realize()
           i != m_tools.end();         ++i )
     {
         wxToolBarTool* tool = static_cast<wxToolBarTool*>(*i);
-        if(!tool->m_qtToolButton)
+        if (!tool->m_qtToolButton)
             continue;
 
         tool->m_qtToolButton->setEnabled(tool->IsEnabled());
@@ -219,11 +222,11 @@ bool wxToolBar::Realize()
 QActionGroup* wxToolBar::GetActionGroup(size_t pos)
 {
     QActionGroup *actionGroup = NULL;
-    if(pos > 0)
+    if (pos > 0)
         actionGroup = GetQToolBar()->actions().at(pos-1)->actionGroup();
-    if(actionGroup == NULL && (int)pos < GetQToolBar()->actions().size() - 1)
+    if (actionGroup == NULL && (int)pos < GetQToolBar()->actions().size() - 1)
         actionGroup = GetQToolBar()->actions().at(pos+1)->actionGroup();
-    if(actionGroup == NULL)
+    if (actionGroup == NULL)
         actionGroup = new QActionGroup(GetQToolBar());
     return actionGroup;
 }
@@ -232,7 +235,7 @@ bool wxToolBar::DoInsertTool(size_t pos, wxToolBarToolBase *toolBase)
 {
     wxToolBarTool* tool = static_cast<wxToolBarTool*>(toolBase);
     QAction *before = NULL;
-    if(pos >= 0 && pos < (size_t)GetQToolBar()->actions().size())
+    if (pos >= 0 && pos < (size_t)GetQToolBar()->actions().size())
         before = GetQToolBar()->actions().at(pos);
 
     QAction *action;
@@ -267,7 +270,7 @@ bool wxToolBar::DoInsertTool(size_t pos, wxToolBarToolBase *toolBase)
             break;
 
         case wxTOOL_STYLE_SEPARATOR:
-            if(tool->IsStretchable()) {
+            if (tool->IsStretchable()) {
                 QWidget* spacer = new QWidget();
                 spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
                 GetQToolBar()->insertWidget(before, spacer);
@@ -331,8 +334,8 @@ wxToolBarToolBase *wxToolBar::CreateTool(wxControl *control,
 
 Qt::ToolButtonStyle wxToolBar::GetButtonStyle()
 {
-    if(!HasFlag(wxTB_NOICONS)) {
-        if(HasFlag(wxTB_HORZ_LAYOUT))
+    if (!HasFlag(wxTB_NOICONS)) {
+        if (HasFlag(wxTB_HORZ_LAYOUT))
             return Qt::ToolButtonTextBesideIcon;
         else if (HasFlag(wxTB_TEXT))
             return Qt::ToolButtonTextUnderIcon;

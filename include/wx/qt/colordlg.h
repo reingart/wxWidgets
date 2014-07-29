@@ -18,7 +18,6 @@ public:
     wxColourDialog() { }
     wxColourDialog(wxWindow *parent,
                    wxColourData *data = NULL) { Create(parent, data); }
-    virtual ~wxColourDialog() {}
 
     bool Create(wxWindow *parent, wxColourData *data = NULL);
 
