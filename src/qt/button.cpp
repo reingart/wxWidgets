@@ -45,7 +45,7 @@ wxWindow *wxButton::SetDefault()
 {
     wxWindow *oldDefault = wxButtonBase::SetDefault();
 
-    m_qtPushButton->setDefault( true );
+    GetQPushButton()->setDefault( true );
 
     return oldDefault;
 

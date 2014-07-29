@@ -31,12 +31,8 @@ public:
 
     virtual void GetBordersForSizer(int *borderTop, int *borderOther) const;
 
-    virtual QGroupBox *GetHandle() const;
-
-protected:
-
 private:
-    QGroupBox *m_qtGroupBox;
+    QGroupBox *GetQGroupBox() const { return static_cast<QGroupBox *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxStaticBox );
 };

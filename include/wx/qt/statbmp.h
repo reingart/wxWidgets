@@ -35,11 +35,8 @@ public:
     virtual wxBitmap GetBitmap() const;
     virtual wxIcon GetIcon() const;
 
-    virtual QLabel *GetHandle() const;
-protected:
-
 private:
-    QLabel *m_qtLabel;
+    QLabel *GetQLabel() const { return static_cast<QLabel *>(m_qtWindow); }
 
     DECLARE_DYNAMIC_CLASS(wxStaticBitmap)
 };

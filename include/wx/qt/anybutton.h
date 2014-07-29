@@ -28,11 +28,8 @@ public:
     virtual void SetLabel( const wxString &label );
     virtual void DoSetBitmap(const wxBitmap& bitmap, State which);
 
-    virtual QPushButton *GetHandle() const;
-
 protected:
-
-    QPushButton *m_qtPushButton;
+    QPushButton *GetQPushButton() const { return static_cast<QPushButton *>(m_qtWindow); }
 
     void QtCreate(wxWindow *parent);
     void QtSetBitmap( const wxBitmap &bitmap );

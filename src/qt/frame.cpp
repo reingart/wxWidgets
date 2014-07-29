@@ -34,7 +34,6 @@ class wxQtCentralWidget : public wxQtEventSignalHandler< QScrollArea, wxFrame >
 
 
 wxFrame::wxFrame()
-    : m_qtMainWindow(NULL)
 {
 }
 
@@ -44,39 +43,30 @@ wxFrame::wxFrame( wxWindow *parent, wxWindowID id, const wxString& title,
     Create( parent, id, title, pos, size, style, name );
 }
 
-wxFrame::~wxFrame()
-{
-    // Destroy the Qt object (delayed, once all pending events are processed)
-    // NOTE: don't do delete directly as it cause SIGSEGV on children
-    //       done here to not continue receiving events from Qt
-    m_qtMainWindow->deleteLater();
-    // Also, avoid base destructor to do it again (just in case):
-    //m_qtMainWindow = NULL;
-}
-
 bool wxFrame::Create( wxWindow *parent, wxWindowID id, const wxString& title,
     const wxPoint& pos, const wxSize& size, long style, const wxString& name )
 {
-    m_qtMainWindow = new wxQtMainWindow( parent, this );
+    m_qtWindow = new wxQtMainWindow( parent, this );
 
     // TODO: Could we use a wxPanel as the central widget? If so then we could
     // remove wxWindow::QtReparent.
 
-    m_qtMainWindow->setCentralWidget( new wxQtCentralWidget( parent, this ) );
+    wxQtCentralWidget *centralwidget = new wxQtCentralWidget( parent, this );
+    GetQMainWindow()->setCentralWidget( centralwidget );
 
     return wxFrameBase::Create( parent, id, title, pos, size, style, name );
 }
 
 void wxFrame::SetMenuBar( wxMenuBar *menuBar )
 {
-    m_qtMainWindow->setMenuBar( menuBar->GetHandle() );
+    GetQMainWindow()->setMenuBar( menuBar->GetQMenuBar() );
 
     wxFrameBase::SetMenuBar( menuBar );
 }
 
 void wxFrame::SetStatusBar( wxStatusBar *statusBar )
 {
-    m_qtMainWindow->setStatusBar( statusBar->GetHandle() );
+    GetQMainWindow()->setStatusBar( statusBar->GetQStatusBar() );
 
     // Update statusbar sizes now that it has a size
     statusBar->Refresh();
@@ -113,7 +103,7 @@ void wxFrame::AddChild( wxWindowBase *child )
 {
     // Make sure all children are children of the central widget:
 
-    QtReparent( child->GetHandle(), GetHandle()->centralWidget() );
+    QtReparent( child->GetHandle(), GetQMainWindow()->centralWidget() );
 
     wxFrameBase::AddChild( child );
 }
@@ -123,15 +113,9 @@ void wxFrame::RemoveChild( wxWindowBase *child )
     wxFrameBase::RemoveChild( child );
 }
 
-
-QMainWindow *wxFrame::GetHandle() const
-{
-    return m_qtMainWindow;
-}
-
 QScrollArea *wxFrame::QtGetScrollBarsContainer() const
 {
-    return dynamic_cast <QScrollArea *> (m_qtMainWindow->centralWidget() );
+    return dynamic_cast <QScrollArea *> (GetQMainWindow()->centralWidget() );
 }
 
 //=============================================================================
@@ -139,7 +123,6 @@ QScrollArea *wxFrame::QtGetScrollBarsContainer() const
 wxQtMainWindow::wxQtMainWindow( wxWindow *parent, wxFrame *handler )
     : wxQtEventSignalHandler< QMainWindow, wxFrame >( parent, handler )
 {
-//    setCentralWidget( new wxQtWidget( parent, handler ));
 }
 
 wxQtCentralWidget::wxQtCentralWidget( wxWindow *parent, wxFrame *handler )

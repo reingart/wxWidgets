@@ -282,12 +282,8 @@ public:
     // data is arbitrary data to be passed to the sort function.
     bool SortItems(wxListCtrlCompare fn, wxIntPtr data);
 
-
-
-    virtual QListWidget *GetHandle() const;
-
 private:
-    QListWidget *m_qtListWidget;
+    QListWidget *GetQListWidget() const { return static_cast<QListWidget *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxListCtrl );
 };

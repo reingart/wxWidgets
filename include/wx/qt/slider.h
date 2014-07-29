@@ -50,10 +50,8 @@ public:
     virtual void SetThumbLength(int lenPixels);
     virtual int GetThumbLength() const;
 
-    virtual QSlider *GetHandle() const;
-
 private:
-    QSlider *m_qtSlider;
+    QSlider *GetQSlider() const { return static_cast<QSlider *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxSlider );
 };

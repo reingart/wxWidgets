@@ -21,10 +21,3 @@ wxFontDialog::wxFontDialog(wxWindow *parent)
 wxFontDialog::wxFontDialog(wxWindow *parent, const wxFontData& data)
 {
 }
-
-
-QFontDialog *wxFontDialog::GetHandle() const
-{
-    return NULL;
-}
-

@@ -74,17 +74,12 @@ bool wxBitmapToggleButton::Create(wxWindow *parent,
 
 void wxBitmapToggleButton::SetValue(bool state)
 {
-    m_qtPushButton->setChecked( state );
+    GetQPushButton()->setChecked( state );
 }
 
 bool wxBitmapToggleButton::GetValue() const
 {
-    return m_qtPushButton->isChecked();
-}
-
-QPushButton *wxBitmapToggleButton::GetHandle() const
-{
-    return m_qtPushButton;
+    return GetQPushButton()->isChecked();
 }
 
 //##############################################################################
@@ -122,22 +117,17 @@ bool wxToggleButton::Create(wxWindow *parent,
 
 void wxToggleButton::SetValue(bool state)
 {
-    m_qtPushButton->setChecked( state );
+    GetQPushButton()->setChecked( state );
 }
 
 bool wxToggleButton::GetValue() const
 {
-    return m_qtPushButton->isChecked();
-}
-
-QPushButton *wxToggleButton::GetHandle() const
-{
-    return m_qtPushButton;
+    return GetQPushButton()->isChecked();
 }
 
 void wxToggleButtonBase::QtCreate(wxWindow *parent)
 {
     // create a checkable push button
-    m_qtPushButton = new wxQtToggleButton( parent, this );
+    m_qtWindow = new wxQtToggleButton( parent, this );
 }
 

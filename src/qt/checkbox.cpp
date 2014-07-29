@@ -51,20 +51,20 @@ bool wxCheckBox::Create(wxWindow *parent, wxWindowID id, const wxString& label,
             const wxPoint& pos, const wxSize& size, long style, const wxValidator& validator,
             const wxString& name )
 {
-    m_qtCheckBox = new wxQtCheckBox( parent, this );
-    m_qtCheckBox->setText( wxQtConvertString( label ) );
+    m_qtWindow = new wxQtCheckBox( parent, this );
+    GetQCheckBox()->setText( wxQtConvertString( label ) );
 
     if ( style & wxCHK_2STATE )
-        m_qtCheckBox->setTristate( false );
+        GetQCheckBox()->setTristate( false );
     else if ( style & wxCHK_3STATE )
     {
-        m_qtCheckBox->setTristate( true );
+        GetQCheckBox()->setTristate( true );
 
         if ( style & wxCHK_ALLOW_3RD_STATE_FOR_USER )
             wxMISSING_IMPLEMENTATION( wxSTRINGIZE( wxCHK_ALLOW_3RD_STATE_FOR_USER ));
     }
     if ( style & wxALIGN_RIGHT )
-        m_qtCheckBox->setLayoutDirection( Qt::RightToLeft );
+        GetQCheckBox()->setLayoutDirection( Qt::RightToLeft );
 
     return QtCreateControl( parent, id, pos, size, style, validator, name );
 }
@@ -72,15 +72,10 @@ bool wxCheckBox::Create(wxWindow *parent, wxWindowID id, const wxString& label,
 
 void wxCheckBox::SetValue(bool value)
 {
-    m_qtCheckBox->setChecked( value );
+    GetQCheckBox()->setChecked( value );
 }
 
 bool wxCheckBox::GetValue() const
 {
-    return m_qtCheckBox->isChecked();
-}
-
-QCheckBox *wxCheckBox::GetHandle() const
-{
-    return m_qtCheckBox;
+    return GetQCheckBox()->isChecked();
 }

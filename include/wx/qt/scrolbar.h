@@ -42,10 +42,10 @@ public:
                               int range, int pageSize,
                               bool refresh = true);
 
-    virtual QScrollBar* GetHandle() const;
-
 private:
-    QScrollBar *m_qtScrollBar;
+    friend class wxWindow;
+
+    QScrollBar *GetQScrollBar() const { return static_cast<QScrollBar *>(m_qtWindow); }
 
     DECLARE_DYNAMIC_CLASS(wxScrollBar)
 };

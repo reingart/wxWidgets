@@ -71,16 +71,15 @@ public:
 
     using wxCalendarCtrlBase::GenerateAllChangeEvents;
 
-    virtual QCalendarWidget *GetHandle() const;
-
 protected:
     virtual void RefreshHolidays();
 
 private:
+    QCalendarWidget *GetQCalendarWidget() const { return static_cast<QCalendarWidget *>(m_qtWindow); }
+
     void Init();
     void UpdateStyle();
 
-    QCalendarWidget *m_qtCalendar;
     wxColour m_colHeaderFg,
              m_colHeaderBg,
              m_colHolidayFg,

@@ -57,7 +57,7 @@ bool wxSpinButton::Create(wxWindow *parent,
             long style,
             const wxString& name)
 {
-    m_qtSpinBox = new wxQtSpinButton( parent, this );
+    m_qtWindow = new wxQtSpinButton( parent, this );
 
     // Modify the size so that the text field is not visible.
     // TODO: Find out the width of the buttons i.e. take the style into account (QStyleOptionSpinBox).
@@ -69,15 +69,10 @@ bool wxSpinButton::Create(wxWindow *parent,
 
 int wxSpinButton::GetValue() const
 {
-    return m_qtSpinBox->value();
+    return GetQSpinBox()->value();
 }
 
 void wxSpinButton::SetValue(int val)
 {
-    m_qtSpinBox->setValue( val );
-}
-
-QSpinBox *wxSpinButton::GetHandle() const
-{
-    return m_qtSpinBox;
+    GetQSpinBox()->setValue( val );
 }

@@ -40,12 +40,6 @@ wxDialog::wxDialog( wxWindow *parent, wxWindowID id,
     Create( parent, id, title, pos, size, style, name );
 }
 
-wxDialog::~wxDialog()
-{
-    SendDestroyEvent();
-}
-
-
 bool wxDialog::Create( wxWindow *parent, wxWindowID id,
         const wxString &title,
         const wxPoint &pos,
@@ -53,34 +47,28 @@ bool wxDialog::Create( wxWindow *parent, wxWindowID id,
         long style,
         const wxString &name)
 {
-    m_qtDialog = new wxQtDialog( parent, this );
-    
+    m_qtWindow = new wxQtDialog( parent, this );
+
     return wxTopLevelWindow::Create( parent, id, title, pos, size, style, name );
 }
 
 int wxDialog::ShowModal()
 {
-    wxCHECK_MSG( GetHandle() != NULL, -1, "Invalid dialog" );
+    wxCHECK_MSG( GetQDialog() != NULL, -1, "Invalid dialog" );
     
-    return GetHandle()->exec();
+    return GetQDialog()->exec();
 }
 
 void wxDialog::EndModal(int retCode)
 {
-    wxCHECK_RET( GetHandle() != NULL, "Invalid dialog" );
+    wxCHECK_RET( GetQDialog() != NULL, "Invalid dialog" );
     
-    GetHandle()->done( retCode );
+    GetQDialog()->done( retCode );
 }
 
 bool wxDialog::IsModal() const
 {
-    wxCHECK_MSG( GetHandle() != NULL, false, "Invalid dialog" );
+    wxCHECK_MSG( GetQDialog() != NULL, false, "Invalid dialog" );
 
-    return GetHandle()->isModal();
+    return GetQDialog()->isModal();
 }
-
-QDialog *wxDialog::GetHandle() const
-{
-    return m_qtDialog;
-}
-

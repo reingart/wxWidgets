@@ -50,6 +50,12 @@ public:
         : Widget( parent != NULL ? parent->GetHandle() : NULL )
         , wxQtSignalHandler< Handler >( handler )
     {
+//        printf("Object created: %p\n", this);
+    }
+
+    ~wxQtEventSignalHandler()
+    {
+//        printf("Object destroyed: %p\n", this);
     }
 
 protected:

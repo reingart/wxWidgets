@@ -76,11 +76,8 @@ public:
     virtual void SetSelection(int n);
     virtual int GetSelection() const;
 
-    virtual QGroupBox *GetHandle() const;
-
 private:
-    // The 'visual' group box:
-    QGroupBox *m_qtGroupBox;
+    QGroupBox *GetQGroupBox() const { return static_cast<QGroupBox *>(m_qtWindow); }
 
     // Handles the mutual exclusion of buttons:
     QButtonGroup *m_qtButtonGroup;

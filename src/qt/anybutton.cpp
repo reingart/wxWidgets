@@ -44,25 +44,20 @@ void wxQtPushButton::clicked( bool WXUNUSED(checked) )
 void wxAnyButton::QtCreate(wxWindow *parent)
 {
     // create the default push button (used in button and bmp button)
-    m_qtPushButton = new wxQtPushButton( parent, this );
+    m_qtWindow = new wxQtPushButton( parent, this );
 }
 
 void wxAnyButton::QtSetBitmap( const wxBitmap &bitmap )
 {
     // load the bitmap and resize the button:
     QPixmap *pixmap = bitmap.GetHandle();
-    m_qtPushButton->setIcon( QIcon( *pixmap  ));
-    m_qtPushButton->setIconSize( pixmap->rect().size() );
+    GetQPushButton()->setIcon( QIcon( *pixmap  ));
+    GetQPushButton()->setIconSize( pixmap->rect().size() );
 }
 
 void wxAnyButton::SetLabel( const wxString &label )
 {
-    m_qtPushButton->setText( wxQtConvertString( label ));
-}
-
-QPushButton *wxAnyButton::GetHandle() const
-{
-    return m_qtPushButton;
+    GetQPushButton()->setText( wxQtConvertString( label ));
 }
 
 void wxAnyButton::DoSetBitmap(const wxBitmap& bitmap, State which)

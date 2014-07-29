@@ -126,9 +126,9 @@ bool wxRadioBox::Create(wxWindow *parent,
             const wxValidator& val,
             const wxString& name)
 {
-    m_qtGroupBox = new wxQtRadioBox( parent, this );
-    m_qtGroupBox->setTitle( wxQtConvertString( title ) );
-    m_qtButtonGroup = new wxQtButtonGroup( m_qtGroupBox, this );
+    m_qtWindow = new wxQtRadioBox( parent, this );
+    GetQGroupBox()->setTitle( wxQtConvertString( title ) );
+    m_qtButtonGroup = new wxQtButtonGroup( GetQGroupBox(), this );
 
     if ( style & wxRA_SPECIFY_ROWS )
         m_qtBoxLayout = new QHBoxLayout;
@@ -137,7 +137,7 @@ bool wxRadioBox::Create(wxWindow *parent,
 
     AddChoices< QRadioButton >( m_qtButtonGroup, m_qtBoxLayout, n, choices );
     m_qtBoxLayout->addStretch(1);
-    m_qtGroupBox->setLayout(m_qtBoxLayout);
+    GetQGroupBox()->setLayout(m_qtBoxLayout);
 
     return QtCreateControl( parent, id, pos, size, style, val, name );
 }
@@ -231,9 +231,3 @@ int wxRadioBox::GetSelection() const
     else
         return wxNOT_FOUND;
 }
-
-QGroupBox *wxRadioBox::GetHandle() const
-{
-    return m_qtGroupBox;
-}
-

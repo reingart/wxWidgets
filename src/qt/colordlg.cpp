@@ -38,9 +38,3 @@ int wxColourDialog::ShowModal()
     return 0;
 }
 
-
-QColorDialog *wxColourDialog::GetHandle() const
-{
-    return NULL;
-}
-

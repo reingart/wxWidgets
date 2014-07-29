@@ -32,10 +32,8 @@ public:
     virtual int GetValue() const;
     virtual void SetValue(int val);
 
-    virtual QSpinBox *GetHandle() const;
-
 private:
-    QSpinBox *m_qtSpinBox;
+    QSpinBox *GetQSpinBox() const { return static_cast<QSpinBox *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxSpinButton );
 };

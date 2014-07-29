@@ -24,11 +24,6 @@ public:
     wxColourData &GetColourData();
 
     virtual int ShowModal();
-
-protected:
-    virtual QColorDialog *GetHandle() const;
-    
-private:
 };
 
 #endif // _WX_QT_COLORDLG_H_

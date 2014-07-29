@@ -175,12 +175,23 @@ wxWindow::~wxWindow()
     delete m_qtShortcutHandler;
 #endif
 
-    // delete QWidget when control return to event loop (safer)
-    if (GetHandle())
-    {
-        GetHandle()->deleteLater();
-    }
+    /* there are two parallel datastructures for our widgets, one in
+       qt, the other in wx.  Further, each wxwidget has a pointer to the
+       corresponding qt widget via GetHandle()
+
+       We don't want the qt widget to exist after the wx widget is
+       destroyed, and because we are always working from the children
+       up, it is safe to delete the qt widget here */
+
+    delete GetHandle();
 }
+
+class wxQtGenericMainWindow : public wxQtEventSignalHandler< QMainWindow, wxWindow >
+{
+public:
+    wxQtGenericMainWindow( wxWindow *parent, wxWindow *handler )
+        : wxQtEventSignalHandler< QMainWindow, wxWindow >( parent, handler ) {}
+};
 
 
 bool wxWindow::Create( wxWindow * parent, wxWindowID id, const wxPoint & pos,
@@ -465,12 +476,12 @@ wxScrollBar *wxWindow::QtSetScrollBar( int orientation, wxScrollBar *scrollBar )
     // Let Qt handle layout
     if ( orientation == wxHORIZONTAL )
     {
-        scrollArea->setHorizontalScrollBar( scrollBar->GetHandle() );
+        scrollArea->setHorizontalScrollBar( scrollBar->GetQScrollBar() );
         m_horzScrollBar = scrollBar;
     }
     else
     {
-        scrollArea->setVerticalScrollBar( scrollBar->GetHandle() );
+        scrollArea->setVerticalScrollBar( scrollBar->GetQScrollBar() );
         m_vertScrollBar = scrollBar;
     }
     return scrollBar;
@@ -917,7 +928,7 @@ bool wxWindow::QtHandlePaintEvent ( QWidget *handler, QPaintEvent *event )
                    m_updateRegion.GetBox().width, m_updateRegion.GetBox().height);
 
         // Prepare the Qt painter for wxWindowDC:
-        bool ok;
+        bool ok = false;
         if ( QtGetScrollBarsContainer() )
         {
             // QScrollArea can only draw in the viewport:
@@ -1478,11 +1489,6 @@ void wxWindow::QtHandleShortcut ( int command )
     }
 }
 #endif // wxUSE_ACCEL
-
-QWidget *wxWindow::GetHandle() const
-{
-    return m_qtWindow;
-}
 
 QScrollArea *wxWindow::QtGetScrollBarsContainer() const
 {

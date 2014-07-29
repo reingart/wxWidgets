@@ -32,7 +32,7 @@ public:
     virtual void Refresh( bool eraseBackground = true,
                           const wxRect *rect = (const wxRect *) NULL );
 
-    virtual QStatusBar *GetHandle() const;
+    QStatusBar *GetQStatusBar() const { return static_cast<QStatusBar *>(m_qtWindow); }
 
 protected:
     virtual void DoUpdateStatusText(int number);
@@ -41,7 +41,6 @@ private:
     void Init();
     void UpdateFields();
 
-    QStatusBar *m_qtStatusBar;
     QList< QLabel* > m_qtPanes;
 
     DECLARE_DYNAMIC_CLASS( wxStatusBar )

@@ -58,8 +58,6 @@ public:
     virtual void DoSetValue(const wxString &text, int flags = 0);
     virtual void WriteText(const wxString& text);
 
-    virtual QWidget *GetHandle() const;
-
 protected:
     virtual wxSize DoGetBestSize() const;
 
@@ -69,8 +67,8 @@ protected:
     virtual QScrollArea *QtGetScrollBarsContainer() const;
 
 private:
-    QLineEdit *m_qtLineEdit;
-    QTextEdit *m_qtTextEdit;
+    QLineEdit *GetQLineEdit() const { return static_cast<QLineEdit *>(m_qtWindow); }
+    QTextEdit *GetQTextEdit() const { return static_cast<QTextEdit *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxTextCtrl );
 };

@@ -44,15 +44,10 @@ bool wxStaticBox::Create(wxWindow *parent, wxWindowID id,
             long style,
             const wxString& name)
 {
-    m_qtGroupBox = new wxQtGroupBox( parent, this );
-    m_qtGroupBox->setTitle( wxQtConvertString( label ) );
+    m_qtWindow = new wxQtGroupBox( parent, this );
+    GetQGroupBox()->setTitle( wxQtConvertString( label ) );
 
     return QtCreateControl( parent, id, pos, size, style, wxDefaultValidator, name );
-}
-
-QGroupBox *wxStaticBox::GetHandle() const
-{
-    return m_qtGroupBox;
 }
 
 void wxStaticBox::GetBordersForSizer(int *borderTop, int *borderOther) const

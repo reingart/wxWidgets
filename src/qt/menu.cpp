@@ -133,17 +133,17 @@ QMenu *wxMenu::GetHandle() const
 
 wxMenuBar::wxMenuBar()
 {
-    m_qtMenuBar = new QMenuBar();
+    m_qtWindow = new QMenuBar();
 }
 
 wxMenuBar::wxMenuBar( long WXUNUSED( style ))
 {
-    m_qtMenuBar = new QMenuBar();
+    m_qtWindow = new QMenuBar();
 }
 
 wxMenuBar::wxMenuBar(size_t count, wxMenu *menus[], const wxString titles[], long WXUNUSED( style ))
 {
-    m_qtMenuBar = new QMenuBar();
+    m_qtWindow = new QMenuBar();
 
     for ( size_t i = 0; i < count; ++i )
         Append( menus[ i ], titles[ i ] );
@@ -167,7 +167,7 @@ bool wxMenuBar::Append( wxMenu *menu, const wxString& title )
     // Override the stored menu title with the given one:
 
     QMenu *qtMenu = SetTitle( menu, title );
-    m_qtMenuBar->addMenu( qtMenu );
+    GetQMenuBar()->addMenu( qtMenu );
     
     return true;
 }
@@ -188,8 +188,8 @@ bool wxMenuBar::Insert(size_t pos, wxMenu *menu, const wxString& title)
     // Override the stored menu title with the given one:
 
     QMenu *qtMenu = SetTitle( menu, title );
-    QAction *qtAction = GetActionAt( m_qtMenuBar, pos );
-    m_qtMenuBar->insertMenu( qtAction, qtMenu );
+    QAction *qtAction = GetActionAt( GetQMenuBar(), pos );
+    GetQMenuBar()->insertMenu( qtAction, qtMenu );
 
     return true;
 }
@@ -201,33 +201,28 @@ wxMenu *wxMenuBar::Remove(size_t pos)
     if (( menu = wxMenuBarBase::Remove( pos )) == NULL )
         return NULL;
 
-    m_qtMenuBar->removeAction( GetActionAt( m_qtMenuBar, pos ));
+    GetQMenuBar()->removeAction( GetActionAt( GetQMenuBar(), pos ));
     return menu;
 }
 
 void wxMenuBar::EnableTop(size_t pos, bool enable)
 {
-    QAction *qtAction = GetActionAt( m_qtMenuBar, pos );
+    QAction *qtAction = GetActionAt( GetQMenuBar(), pos );
     qtAction->setEnabled( enable );
 }
 
 
 void wxMenuBar::SetMenuLabel(size_t pos, const wxString& label)
 {
-    QAction *qtAction = GetActionAt( m_qtMenuBar, pos );
+    QAction *qtAction = GetActionAt( GetQMenuBar(), pos );
     QMenu *qtMenu = qtAction->menu();
     qtMenu->setTitle( wxQtConvertString( label ));
 }
 
 wxString wxMenuBar::GetMenuLabel(size_t pos) const
 {
-    QAction *qtAction = GetActionAt( m_qtMenuBar, pos );
+    QAction *qtAction = GetActionAt( GetQMenuBar(), pos );
     QMenu *qtMenu = qtAction->menu();
 
     return wxQtConvertString( qtMenu->title() );
-}
-
-QMenuBar *wxMenuBar::GetHandle() const
-{
-    return m_qtMenuBar;
 }

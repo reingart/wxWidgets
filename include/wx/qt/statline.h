@@ -29,10 +29,8 @@ public:
                  long style = wxLI_HORIZONTAL,
                  const wxString &name = wxStaticLineNameStr );
 
-    virtual QFrame *GetHandle() const;
-
 private:
-    QFrame *m_qtFrame;
+    QFrame *GetQFrame() const { return static_cast<QFrame *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxStaticLine );
 };

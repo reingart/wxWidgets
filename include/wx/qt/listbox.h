@@ -57,11 +57,11 @@ public:
     virtual void SetSelection(int n);
     virtual int GetSelection() const;
 
-    virtual QListWidget *GetHandle() const;
-
     void QtSendEvent(wxEventType evtType, const QModelIndex &index, bool selected);
 
 protected:
+    QListWidget *GetQListWidget() const { return static_cast<QListWidget *>(m_qtWindow); }
+
     virtual void DoSetFirstItem(int n);
 
     virtual void DoSetSelection(int n, bool select);
@@ -83,8 +83,6 @@ protected:
 #if wxUSE_CHECKLISTBOX
     bool       m_hasCheckBoxes;
 #endif // wxUSE_CHECKLISTBOX
-
-    QListWidget *m_qtListWidget;
 
 private:
     virtual void Init(); //common construction

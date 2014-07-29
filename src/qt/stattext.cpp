@@ -34,24 +34,19 @@ bool wxStaticText::Create(wxWindow *parent,
             long style,
             const wxString &name)
 {
-    m_qtLabel = new QLabel( wxQtConvertString( label ), parent->GetHandle() );
+    m_qtWindow = new QLabel( wxQtConvertString( label ), parent->GetHandle() );
 
     // Set the buddy to itself to get the mnemonic key but ensure that we don't have
     // any unwanted side effects, so disable the interaction:
 
-    m_qtLabel->setBuddy( m_qtLabel );
-    m_qtLabel->setTextInteractionFlags( Qt::NoTextInteraction );
-    m_qtLabel->setWordWrap( true );
+    GetQLabel()->setBuddy( GetQLabel() );
+    GetQLabel()->setTextInteractionFlags( Qt::NoTextInteraction );
+    GetQLabel()->setWordWrap( true );
 
     return QtCreateControl( parent, id, pos, size, style, wxDefaultValidator, name );
 }
 
 void wxStaticText::SetLabel(const wxString& label)
 {
-    m_qtLabel->setText( wxQtConvertString( label ) );
-}
-
-QLabel *wxStaticText::GetHandle() const
-{
-    return m_qtLabel;
+    GetQLabel()->setText( wxQtConvertString( label ) );
 }

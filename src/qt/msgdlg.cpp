@@ -27,39 +27,39 @@ wxMessageDialog::wxMessageDialog( wxWindow *parent, const wxString& message,
         const wxString& caption, long style, const wxPoint& pos )
     : wxMessageDialogBase( parent, message, caption, style )
 {
-    m_qtMessageBox = new wxQtMessageDialog( parent, this );
+    m_qtWindow = new wxQtMessageDialog( parent, this );
 
     // Set properties
     Move( pos );
-    m_qtMessageBox->setText( wxQtConvertString( message ) );
-    m_qtMessageBox->setWindowTitle( wxQtConvertString( caption ) );
+    GetQMessageBox()->setText( wxQtConvertString( message ) );
+    GetQMessageBox()->setWindowTitle( wxQtConvertString( caption ) );
     
     // Apply the style
     SetWindowStyleFlag( style );
 
     // Buttons
     if ( style & wxOK )
-        m_qtMessageBox->addButton( QMessageBox::Ok );
+        GetQMessageBox()->addButton( QMessageBox::Ok );
     if ( style & wxCANCEL )
-        m_qtMessageBox->addButton( QMessageBox::Cancel );
+        GetQMessageBox()->addButton( QMessageBox::Cancel );
     if ( style & wxYES_NO )
     {
-        m_qtMessageBox->addButton( QMessageBox::Yes );
-        m_qtMessageBox->addButton( QMessageBox::No );
+        GetQMessageBox()->addButton( QMessageBox::Yes );
+        GetQMessageBox()->addButton( QMessageBox::No );
     }
 
     // Default button
     if ( style & wxNO_DEFAULT )
-        m_qtMessageBox->setDefaultButton( QMessageBox::No );
+        GetQMessageBox()->setDefaultButton( QMessageBox::No );
     else if ( style & wxCANCEL_DEFAULT )
-        m_qtMessageBox->setDefaultButton( QMessageBox::Cancel );
+        GetQMessageBox()->setDefaultButton( QMessageBox::Cancel );
     else
     {
         // Default to OK or Yes
         if ( style & wxOK )
-            m_qtMessageBox->setDefaultButton( QMessageBox::Ok );
+            GetQMessageBox()->setDefaultButton( QMessageBox::Ok );
         else
-            m_qtMessageBox->setDefaultButton( QMessageBox::Yes );
+            GetQMessageBox()->setDefaultButton( QMessageBox::Yes );
     }
 
     // Icon
@@ -67,31 +67,31 @@ wxMessageDialog::wxMessageDialog( wxWindow *parent, const wxString& message,
     if ( style & wxICON_NONE )
     {
         numIcons++;
-        m_qtMessageBox->setIcon( QMessageBox::NoIcon );
+        GetQMessageBox()->setIcon( QMessageBox::NoIcon );
     }
 
     if ( style & wxICON_EXCLAMATION )
     {
         numIcons++;
-        m_qtMessageBox->setIcon( QMessageBox::Warning );
+        GetQMessageBox()->setIcon( QMessageBox::Warning );
     }
 
     if ( style & wxICON_ERROR || style & wxICON_HAND )
     {
         numIcons++;
-        m_qtMessageBox->setIcon( QMessageBox::Critical );
+        GetQMessageBox()->setIcon( QMessageBox::Critical );
     }
 
     if ( style & wxICON_QUESTION )
     {
         numIcons++;
-        m_qtMessageBox->setIcon( QMessageBox::Question );
+        GetQMessageBox()->setIcon( QMessageBox::Question );
     }
         
     if ( style & wxICON_INFORMATION )
     {
         numIcons++;
-        m_qtMessageBox->setIcon( QMessageBox::Information );
+        GetQMessageBox()->setIcon( QMessageBox::Information );
     }
 
     wxCHECK_RET( numIcons <= 1, "Multiple icon definitions" );
@@ -99,21 +99,21 @@ wxMessageDialog::wxMessageDialog( wxWindow *parent, const wxString& message,
     {
         // Use default
         if ( style & wxYES_NO )
-            m_qtMessageBox->setIcon( QMessageBox::Question );
+            GetQMessageBox()->setIcon( QMessageBox::Question );
         else
-            m_qtMessageBox->setIcon( QMessageBox::Information );
+            GetQMessageBox()->setIcon( QMessageBox::Information );
     }
 
     if ( style & wxSTAY_ON_TOP )
-        m_qtMessageBox->setWindowModality( Qt::ApplicationModal );
+        GetQMessageBox()->setWindowModality( Qt::ApplicationModal );
 }
 
 int wxMessageDialog::ShowModal()
 {
-    wxCHECK_MSG( m_qtMessageBox, -1, "Invalid dialog" );
+    wxCHECK_MSG( GetQMessageBox(), -1, "Invalid dialog" );
     
     // Exec may return a wx identifier if a close event is generated
-    int ret = GetHandle()->exec();
+    int ret = GetQMessageBox()->exec();
     switch ( ret )
     {
         case QMessageBox::Ok:
@@ -128,21 +128,6 @@ int wxMessageDialog::ShowModal()
             //wxFAIL_MSG( "unexpected QMessageBox return code" );
             return ret;
     }                                        
-}
-
-QMessageBox *wxMessageDialog::GetHandle() const
-{
-    return m_qtMessageBox;
-}
-
-wxMessageDialog::~wxMessageDialog()
-{
-    // Destroy the Qt object (delayed, once all pending events are processed)
-    // NOTE: don't do delete directly as it cause SIGSEGV on children
-    //       done here to not continue receiving events from Qt
-    m_qtMessageBox->deleteLater();
-    // Also, avoid base destructor to do it again (just in case):
-    m_qtMessageBox = NULL;
 }
 
 //=============================================================================

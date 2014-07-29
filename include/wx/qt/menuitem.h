@@ -36,7 +36,7 @@ public:
     void SetBitmap(const wxBitmap& bitmap);
     const wxBitmap& GetBitmap() const;
 
-    virtual QAction *GetHandle() const;
+    QAction *GetHandle() const;
 
 private:
     // Qt is using an action instead of a menu item.

@@ -17,8 +17,8 @@ public:
     wxFontDialog(wxWindow *parent);
     wxFontDialog(wxWindow *parent, const wxFontData& data);
     
-protected:
-    virtual QFontDialog *GetHandle() const;
+private:
+//    QFontDialog *GetFontDialog() const { return static_cast<QFontDialog *>(m_qtWindow); }
 };
 
 #endif // _WX_QT_FONTDLG_H_

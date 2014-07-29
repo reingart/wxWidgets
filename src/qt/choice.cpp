@@ -85,10 +85,10 @@ bool wxChoice::Create( wxWindow *parent, wxWindowID id,
         const wxValidator& validator,
         const wxString& name )
 {
-    m_qtComboBox = new wxQtChoice( parent, this );
+    m_qtWindow = new wxQtChoice( parent, this );
 
     while ( n-- > 0 )
-        m_qtComboBox->addItem( wxQtConvertString( *choices++ ));
+        GetQComboBox()->addItem( wxQtConvertString( *choices++ ));
 
     return QtCreateControl( parent, id, pos, size, style, validator, name );
 }
@@ -108,28 +108,28 @@ wxSize wxChoice::DoGetBestSize() const
 
 unsigned wxChoice::GetCount() const
 {
-    return m_qtComboBox->count();
+    return GetQComboBox()->count();
 }
 
 wxString wxChoice::GetString(unsigned int n) const
 {
-    return wxQtConvertString( m_qtComboBox->itemText(n) );
+    return wxQtConvertString( GetQComboBox()->itemText(n) );
 }
 
 void wxChoice::SetString(unsigned int n, const wxString& s)
 {
-    m_qtComboBox->setItemText(n, wxQtConvertString(s));
+    GetQComboBox()->setItemText(n, wxQtConvertString(s));
 }
 
 
 void wxChoice::SetSelection(int n)
 {
-    m_qtComboBox->setCurrentIndex(n);
+    GetQComboBox()->setCurrentIndex(n);
 }
 
 int wxChoice::GetSelection() const
 {
-    return m_qtComboBox->currentIndex();
+    return GetQComboBox()->currentIndex();
 }
 
 
@@ -145,33 +145,28 @@ int wxChoice::DoInsertItems(const wxArrayStringsAdapter & items,
 
 int wxChoice::DoInsertOneItem(const wxString& item, unsigned int pos)
 {
-    m_qtComboBox->insertItem(pos, wxQtConvertString(item));
+    GetQComboBox()->insertItem(pos, wxQtConvertString(item));
 }
 
 void wxChoice::DoSetItemClientData(unsigned int n, void *clientData)
 {
     QVariant variant = qVariantFromValue(clientData);
-    m_qtComboBox->setItemData(n, variant);
+    GetQComboBox()->setItemData(n, variant);
 }
 
 void *wxChoice::DoGetItemClientData(unsigned int n) const
 {
-    QVariant variant = m_qtComboBox->itemData(n);
+    QVariant variant = GetQComboBox()->itemData(n);
     return variant.value<void *>();
 }
 
 
 void wxChoice::DoClear()
 {
-    m_qtComboBox->clear();
+    GetQComboBox()->clear();
 }
 
 void wxChoice::DoDeleteOneItem(unsigned int pos)
 {
-    m_qtComboBox->removeItem(pos);
-}
-
-QComboBox *wxChoice::GetHandle() const
-{
-    return m_qtComboBox;
+    GetQComboBox()->removeItem(pos);
 }
