@@ -49,8 +49,9 @@ public:
     wxQtEventSignalHandler( wxWindow *parent, Handler *handler )
         : Widget( parent != NULL ? parent->GetHandle() : NULL )
         , wxQtSignalHandler< Handler >( handler )
-    {
-    }
+    { }
+
+    ~wxQtEventSignalHandler() { }
 
 protected:
     /* Not implemented here: wxHelpEvent, wxIdleEvent wxJoystickEvent,
@@ -223,7 +224,7 @@ protected:
         else
             event->accept();
     }
-    
+
     //wxMouseEvent
     virtual void wheelEvent ( QWheelEvent * event )
     {

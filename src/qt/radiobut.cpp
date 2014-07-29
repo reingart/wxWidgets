@@ -36,23 +36,18 @@ bool wxRadioButton::Create( wxWindow *parent,
              const wxValidator& validator,
              const wxString& name)
 {
-    m_qtRadioButton = new QRadioButton( parent->GetHandle() );
-    m_qtRadioButton->setText( wxQtConvertString( label ));
+    m_qtWindow = new QRadioButton( parent->GetHandle() );
+    GetQRadioButton()->setText( wxQtConvertString( label ));
 
     return QtCreateControl( parent, id, pos, size, style, validator, name );
 }
 
 void wxRadioButton::SetValue(bool value)
 {
-    m_qtRadioButton->setChecked( value );
+    GetQRadioButton()->setChecked( value );
 }
 
 bool wxRadioButton::GetValue() const
 {
-    return m_qtRadioButton->isChecked();
-}
-
-QRadioButton *wxRadioButton::GetHandle() const
-{
-    return m_qtRadioButton;
+    return GetQRadioButton()->isChecked();
 }

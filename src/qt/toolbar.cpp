@@ -20,9 +20,16 @@ class wxQtToolButton;
 class wxToolBarTool : public wxToolBarToolBase
 {
 public:
-    wxToolBarTool(wxToolBar *tbar, int id, const wxString& label, const wxBitmap& bitmap1,
-                  const wxBitmap& bitmap2, wxItemKind kind, wxObject *clientData,
-                  const wxString& shortHelpString, const wxString& longHelpString)
+    wxToolBarTool(wxToolBar *tbar,
+                  int id,
+                  const wxString& label,
+                  const wxBitmap& bitmap1,
+                  const wxBitmap& bitmap2,
+                  wxItemKind kind,
+                  wxObject *clientData,
+                  const wxString& shortHelpString,
+                  const wxString& longHelpString)
+
         : wxToolBarToolBase(tbar, id, label, bitmap1, bitmap2, kind,
                             clientData, shortHelpString, longHelpString)
     {
@@ -49,9 +56,9 @@ class wxQtToolButton : public QToolButton, public wxQtSignalHandler< wxToolBarTo
 {
 
 public:
-    wxQtToolButton(wxToolBar *parent, wxToolBarTool *handler)
-        : QToolButton(parent->GetHandle()),
-          wxQtSignalHandler< wxToolBarTool >( handler ) {
+    wxQtToolButton(QToolBar *toolbar, wxToolBarTool *handler)
+        : QToolButton(toolbar), wxQtSignalHandler< wxToolBarTool >( handler )
+    {
         setContextMenuPolicy(Qt::PreventContextMenu);
     }
 
@@ -64,7 +71,8 @@ private:
 void wxQtToolButton::mouseReleaseEvent( QMouseEvent *event )
 {
     QToolButton::mouseReleaseEvent(event);
-    if(event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton)
+    {
         wxToolBarTool *handler = GetHandler();
         wxToolBarBase *toolbar = handler->GetToolBar();
         toolbar->OnLeftClick( handler->GetId(), isCheckable() ? 1 : 0 );
@@ -74,7 +82,8 @@ void wxQtToolButton::mouseReleaseEvent( QMouseEvent *event )
 void wxQtToolButton::mousePressEvent( QMouseEvent *event )
 {
     QToolButton::mousePressEvent(event);
-    if(event->button() == Qt::RightButton) {
+    if (event->button() == Qt::RightButton)
+    {
         wxToolBarTool *handler = GetHandler();
         wxToolBarBase *toolbar = handler->GetToolBar();
         toolbar->OnRightClick( handler->GetId(), event->x(), event->y() );
@@ -85,19 +94,15 @@ void wxQtToolButton::enterEvent( QEvent *WXUNUSED(event) )
 {
     wxToolBarTool *handler = GetHandler();
     wxToolBarBase *toolbar = handler->GetToolBar();
-//    toolbar->OnMouseEnter( handler->GetId() );
+    toolbar->OnMouseEnter( handler->GetId() );
 }
-
-// is this needed?
-//IMPLEMENT_DYNAMIC_CLASS(wxToolBar, wxControl)
 
 void wxToolBarTool::SetLabel( const wxString &label )
 {
     wxToolBarToolBase::SetLabel( label );
 
-    if(m_qtToolButton) {
+    if (m_qtToolButton)
         m_qtToolButton->setText(wxQtConvertString( label ));
-    }
 }
 
 void wxToolBarTool::SetDropdownMenu(wxMenu* menu)
@@ -122,44 +127,47 @@ void wxToolBarTool::SetToolTip()
     m_qtToolButton->setToolTip(wxQtConvertString( GetShortHelp() ));
 }
 
-QToolBar *wxToolBar::QtToolBar() const
-{
-    return m_qtToolBar;
-}
-
-void wxToolBar::Init()
-{
-    m_qtToolBar = NULL;
-}
-
-wxToolBar::~wxToolBar()
-{
-    delete m_qtToolBar;
-}
+IMPLEMENT_DYNAMIC_CLASS(wxToolBar, wxControl)
 
 bool wxToolBar::Create(wxWindow *parent, wxWindowID id, const wxPoint& pos,
                        const wxSize& size, long style, const wxString& name)
 {
-    m_qtToolBar = new QToolBar(wxQtConvertString( name ));
+    m_qtWindow = new QToolBar(wxQtConvertString( name ));
 
     // reset pointer so we don't try to delete the toolbar when we exit
-    connect( m_qtToolBar, &QObject::destroyed, this, &wxToolBar::Init );
 
     SetWindowStyleFlag(style);
 
-    QMainWindow *mainwindow = qobject_cast<QMainWindow*>(parent->GetHandle());
-    if(!mainwindow)
-        wxFAIL_MSG( wxT("wxToolBar::QtCreate() parent not a QMainWindow"));
+    // The ToolBar must attach to a QMainWindow, so try parent
+    QObject *handle = parent->GetHandle();
+    QMainWindow *mainwindow = NULL;
+    while (!mainwindow)
+    {
+        mainwindow = qobject_cast<QMainWindow*>(handle);
+        if (!handle)
+            wxFAIL_MSG( wxT("wxToolBar::QtCreate() parent not a QMainWindow"));
+        handle = handle->parent();
+    }
 
     int area = 0;
-    if(HasFlag(wxTB_LEFT))   area |= Qt::LeftToolBarArea;
-    if(HasFlag(wxTB_RIGHT))  area |= Qt::RightToolBarArea;
-    if(HasFlag(wxTB_TOP))    area |= Qt::TopToolBarArea;
-    if(HasFlag(wxTB_BOTTOM)) area |= Qt::BottomToolBarArea;
+    if (HasFlag(wxTB_LEFT))   area |= Qt::LeftToolBarArea;
+    if (HasFlag(wxTB_RIGHT))  area |= Qt::RightToolBarArea;
+    if (HasFlag(wxTB_TOP))    area |= Qt::TopToolBarArea;
+    if (HasFlag(wxTB_BOTTOM)) area |= Qt::BottomToolBarArea;
 
-    mainwindow->addToolBar((Qt::ToolBarArea)area, m_qtToolBar);
+    mainwindow->addToolBar((Qt::ToolBarArea)area, GetQToolBar());
+
+    // this there some reason we don't use QtCreateControl
 
     return wxWindowBase::CreateBase( parent, id, pos, size, style, wxDefaultValidator, name );
+}
+
+wxToolBar::~wxToolBar()
+{
+    /* the qt toolbar and our tools list are competing for who gets
+       to delete the tools, so remove them from the QToolBar here
+       (which also ensures we won't get any more events from them */
+    GetQToolBar()->clear();
 }
 
 wxToolBarToolBase *wxToolBar::FindToolForPosition(wxCoord WXUNUSED(x),
@@ -174,10 +182,10 @@ void wxToolBar::SetWindowStyleFlag( long style )
 {
     wxToolBarBase::SetWindowStyleFlag(style);
 
-    if ( !m_qtToolBar )
+    if ( !GetQToolBar() )
         return;
 
-    m_qtToolBar->setOrientation( IsVertical() ? Qt::Vertical : Qt::Horizontal);
+    GetQToolBar()->setOrientation( IsVertical() ? Qt::Vertical : Qt::Horizontal);
 
     Qt::ToolButtonStyle buttonStyle = GetButtonStyle();
 
@@ -186,7 +194,7 @@ void wxToolBar::SetWindowStyleFlag( long style )
           i != m_tools.end();         ++i )
     {
         wxToolBarTool* tool = static_cast<wxToolBarTool*>(*i);
-        if(!tool->m_qtToolButton)
+        if (!tool->m_qtToolButton)
             continue;
 
         tool->m_qtToolButton->setToolButtonStyle(buttonStyle);
@@ -203,7 +211,7 @@ bool wxToolBar::Realize()
           i != m_tools.end();         ++i )
     {
         wxToolBarTool* tool = static_cast<wxToolBarTool*>(*i);
-        if(!tool->m_qtToolButton)
+        if (!tool->m_qtToolButton)
             continue;
 
         tool->m_qtToolButton->setEnabled(tool->IsEnabled());
@@ -221,12 +229,12 @@ bool wxToolBar::Realize()
 QActionGroup* wxToolBar::GetActionGroup(size_t pos)
 {
     QActionGroup *actionGroup = NULL;
-    if(pos > 0)
-        actionGroup = QtToolBar()->actions().at(pos-1)->actionGroup();
-    if(actionGroup == NULL && (int)pos < QtToolBar()->actions().size() - 1)
-        actionGroup = QtToolBar()->actions().at(pos+1)->actionGroup();
-    if(actionGroup == NULL)
-        actionGroup = new QActionGroup(QtToolBar());
+    if (pos > 0)
+        actionGroup = GetQToolBar()->actions().at(pos-1)->actionGroup();
+    if (actionGroup == NULL && (int)pos < GetQToolBar()->actions().size() - 1)
+        actionGroup = GetQToolBar()->actions().at(pos+1)->actionGroup();
+    if (actionGroup == NULL)
+        actionGroup = new QActionGroup(GetQToolBar());
     return actionGroup;
 }
 
@@ -234,14 +242,14 @@ bool wxToolBar::DoInsertTool(size_t pos, wxToolBarToolBase *toolBase)
 {
     wxToolBarTool* tool = static_cast<wxToolBarTool*>(toolBase);
     QAction *before = NULL;
-    if(pos >= 0 && pos < (size_t)QtToolBar()->actions().size())
-        before = QtToolBar()->actions().at(pos);
+    if (pos >= 0 && pos < (size_t)GetQToolBar()->actions().size())
+        before = GetQToolBar()->actions().at(pos);
 
     QAction *action;
     switch ( tool->GetStyle() )
     {
         case wxTOOL_STYLE_BUTTON:
-            tool->m_qtToolButton = new wxQtToolButton(this, tool);
+            tool->m_qtToolButton = new wxQtToolButton(GetQToolBar(), tool);
             tool->m_qtToolButton->setToolButtonStyle(GetButtonStyle());
             tool->SetLabel( tool->GetLabel() );
 
@@ -250,7 +258,7 @@ bool wxToolBar::DoInsertTool(size_t pos, wxToolBarToolBase *toolBase)
             if (!HasFlag(wxTB_NO_TOOLTIPS))
                 tool->SetToolTip();
 
-            action = QtToolBar()->insertWidget(before, tool->m_qtToolButton);
+            action = GetQToolBar()->insertWidget(before, tool->m_qtToolButton);
 
             switch (tool->GetKind())
             {
@@ -269,17 +277,17 @@ bool wxToolBar::DoInsertTool(size_t pos, wxToolBarToolBase *toolBase)
             break;
 
         case wxTOOL_STYLE_SEPARATOR:
-            if(tool->IsStretchable()) {
+            if (tool->IsStretchable()) {
                 QWidget* spacer = new QWidget();
                 spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-                QtToolBar()->insertWidget(before, spacer);
+                GetQToolBar()->insertWidget(before, spacer);
             } else
-                QtToolBar()->insertSeparator(before);
+                GetQToolBar()->insertSeparator(before);
             break;
 
         case wxTOOL_STYLE_CONTROL:
             wxWindow* control = tool->GetControl();
-            QtToolBar()->insertWidget(before, control->GetHandle());
+            GetQToolBar()->insertWidget(before, control->GetHandle());
             break;
     }
 
@@ -333,8 +341,8 @@ wxToolBarToolBase *wxToolBar::CreateTool(wxControl *control,
 
 Qt::ToolButtonStyle wxToolBar::GetButtonStyle()
 {
-    if(!HasFlag(wxTB_NOICONS)) {
-        if(HasFlag(wxTB_HORZ_LAYOUT))
+    if (!HasFlag(wxTB_NOICONS)) {
+        if (HasFlag(wxTB_HORZ_LAYOUT))
             return Qt::ToolButtonTextBesideIcon;
         else if (HasFlag(wxTB_TEXT))
             return Qt::ToolButtonTextUnderIcon;

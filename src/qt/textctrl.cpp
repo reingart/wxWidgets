@@ -102,15 +102,10 @@ bool wxTextCtrl::Create(wxWindow *parent,
     bool multiline = (style & wxTE_MULTILINE) != 0;
 
     if (!multiline)
-    {
-        m_qtLineEdit = new wxQtLineEdit( parent, this );
-        m_qtTextEdit = NULL;
-    }
+        m_qtWindow = new wxQtLineEdit( parent, this );
     else
-    {
-        m_qtTextEdit = new wxQtTextEdit( parent, this );
-        m_qtLineEdit = NULL;
-    }
+        m_qtWindow = new wxQtTextEdit( parent, this );
+
     if ( QtCreateControl( parent, id, pos, size, style, validator, name ) )
     {
         // set the initial text value without sending the event:
@@ -210,16 +205,16 @@ void wxTextCtrl::SetInsertionPoint(long pos)
     if ( !IsMultiLine() )
     {
         if (op == QTextCursor::End)
-            m_qtLineEdit->end(false);
+            GetQLineEdit()->end(false);
         else
-            m_qtLineEdit->setCursorPosition(pos);
+            GetQLineEdit()->setCursorPosition(pos);
     }
     else
     {
-        cursor = m_qtTextEdit->textCursor();
+        cursor = GetQTextEdit()->textCursor();
         cursor.movePosition(op, QTextCursor::MoveAnchor, pos);
-        m_qtTextEdit->setTextCursor(cursor);
-        m_qtTextEdit->ensureCursorVisible();
+        GetQTextEdit()->setTextCursor(cursor);
+        GetQTextEdit()->ensureCursorVisible();
     }
 }
 
@@ -229,11 +224,11 @@ long wxTextCtrl::GetInsertionPoint() const
 
     if ( !IsMultiLine() )
     {
-        return m_qtLineEdit->cursorPosition();
+        return GetQLineEdit()->cursorPosition();
     }
     else
     {
-        cursor = m_qtTextEdit->textCursor();
+        cursor = GetQTextEdit()->textCursor();
         return cursor.position();
     }
 }
@@ -241,9 +236,9 @@ long wxTextCtrl::GetInsertionPoint() const
 wxString wxTextCtrl::DoGetValue() const
 {
     if ( IsMultiLine() )
-        return wxQtConvertString( m_qtTextEdit->toPlainText() );
+        return wxQtConvertString( GetQTextEdit()->toPlainText() );
     else
-        return wxQtConvertString( m_qtLineEdit->text() );
+        return wxQtConvertString( GetQLineEdit()->text() );
 }
 
 void wxTextCtrl::SetSelection( long from, long to )
@@ -256,14 +251,14 @@ void wxTextCtrl::SetSelection( long from, long to )
     }
     if ( IsMultiLine() )
     {
-        QTextCursor cursor = m_qtTextEdit->textCursor();
+        QTextCursor cursor = GetQTextEdit()->textCursor();
         cursor.setPosition(from);
         cursor.setPosition(to, QTextCursor::KeepAnchor);
-        m_qtTextEdit->setTextCursor(cursor);
+        GetQTextEdit()->setTextCursor(cursor);
     }
     else // single line
     {
-        m_qtLineEdit->setSelection(from, to);
+        GetQLineEdit()->setSelection(from, to);
     }
 }
 
@@ -272,13 +267,13 @@ void wxTextCtrl::WriteText( const wxString &text )
     // Insert the text
     if ( !IsMultiLine() )
     {
-        m_qtLineEdit->insert(wxQtConvertString( text ));
+        GetQLineEdit()->insert(wxQtConvertString( text ));
     }
     else
     {
-        m_qtTextEdit->insertPlainText(wxQtConvertString( text ));
+        GetQTextEdit()->insertPlainText(wxQtConvertString( text ));
         // the cursor is moved to the end, ensure it is shown
-        m_qtTextEdit->ensureCursorVisible();
+        GetQTextEdit()->ensureCursorVisible();
     }
 }
 
@@ -288,45 +283,37 @@ void wxTextCtrl::DoSetValue( const wxString &text, int flags )
     if ( !(flags & SetValue_SendEvent) )
     {
         if ( !IsMultiLine() )
-            m_qtLineEdit->blockSignals(true);
+            GetQLineEdit()->blockSignals(true);
         else
-            m_qtTextEdit->blockSignals(true);
+            GetQTextEdit()->blockSignals(true);
     }
 
     // Replace the text int the control
     if ( !IsMultiLine() )
     {
-        m_qtLineEdit->setText(wxQtConvertString( text ));
+        GetQLineEdit()->setText(wxQtConvertString( text ));
     }
     else
     {
-        m_qtTextEdit->setPlainText(wxQtConvertString( text ));
+        GetQTextEdit()->setPlainText(wxQtConvertString( text ));
         // the cursor is moved to the end, ensure it is shown
-        m_qtTextEdit->ensureCursorVisible();
+        GetQTextEdit()->ensureCursorVisible();
     }
 
     // re-enable qt signals
     if ( !(flags & SetValue_SendEvent) )
     {
         if ( !IsMultiLine() )
-            m_qtLineEdit->blockSignals(false);
+            GetQLineEdit()->blockSignals(false);
         else
-            m_qtTextEdit->blockSignals(false);
+            GetQTextEdit()->blockSignals(false);
     }
-}
-
-QWidget *wxTextCtrl::GetHandle() const
-{
-    if (m_qtLineEdit!=NULL)
-        return (QWidget *) m_qtLineEdit;
-    else
-        return (QWidget *) m_qtTextEdit;
 }
 
 QScrollArea *wxTextCtrl::QtGetScrollBarsContainer() const
 {
-    if (m_qtTextEdit!=NULL)
-        return (QScrollArea *) m_qtTextEdit;
+    if (IsMultiLine())
+        return static_cast<QScrollArea *>(m_qtWindow);
     else
         return NULL;
 }

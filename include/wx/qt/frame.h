@@ -26,7 +26,6 @@ public:
                const wxSize& size = wxDefaultSize,
                long style = wxDEFAULT_FRAME_STYLE,
                const wxString& name = wxFrameNameStr);
-    virtual ~wxFrame();
 
     bool Create(wxWindow *parent,
                 wxWindowID id,
@@ -44,12 +43,10 @@ public:
     virtual void AddChild( wxWindowBase *child );
     virtual void RemoveChild( wxWindowBase *child );
 
-    virtual QMainWindow *GetHandle() const;
-
     virtual QScrollArea *QtGetScrollBarsContainer() const;
 
 private:
-    QMainWindow *m_qtMainWindow;
+    QMainWindow *GetQMainWindow() const { return static_cast<QMainWindow *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxFrame );
 };

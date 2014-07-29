@@ -82,7 +82,7 @@ bool wxListBox::Create(wxWindow *parent, wxWindowID id,
 {
     Init();
     QListWidgetItem* item;
-    m_qtListWidget = new wxQtListWidget( parent, this );
+    m_qtWindow = new wxQtListWidget( parent, this );
 
     while ( n-- > 0 )
     {
@@ -93,7 +93,7 @@ bool wxListBox::Create(wxWindow *parent, wxWindowID id,
             item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
             item->setCheckState(Qt::Unchecked);
         }
-        m_qtListWidget->addItem(item);
+        GetQListWidget()->addItem(item);
     }
     return wxListBoxBase::Create( parent, id, pos, size, style, validator, name );
 }
@@ -107,7 +107,9 @@ bool wxListBox::Create(wxWindow *parent, wxWindowID id,
             const wxString& name)
 {
     Init();
-    m_qtListWidget = new wxQtListWidget( parent, this );
+    m_qtWindow = new wxQtListWidget( parent, this );
+
+    // this there some reason we don't use QtCreateControl
 
     return wxListBoxBase::Create( parent, id, pos, size, style, validator, name );
 }
@@ -121,7 +123,7 @@ void wxListBox::Init()
 
 bool wxListBox::IsSelected(int n) const
 {
-    QListWidgetItem* item = m_qtListWidget->item(n);
+    QListWidgetItem* item = GetQListWidget()->item(n);
     return item->isSelected();
 }
 
@@ -132,19 +134,19 @@ int wxListBox::GetSelections(wxArrayInt& aSelections) const
 
 unsigned wxListBox::GetCount() const
 {
-    return m_qtListWidget->count();
+    return GetQListWidget()->count();
 }
 
 wxString wxListBox::GetString(unsigned int n) const
 {    
-    QListWidgetItem* item = m_qtListWidget->item(n);
+    QListWidgetItem* item = GetQListWidget()->item(n);
     wxCHECK_MSG(item != NULL, wxString(), wxT("wrong listbox index") );
     return wxQtConvertString( item->text() );
 }
 
 void wxListBox::SetString(unsigned int n, const wxString& s)
 {
-    QListWidgetItem* item = m_qtListWidget->item(n);
+    QListWidgetItem* item = GetQListWidget()->item(n);
     wxCHECK_RET(item != NULL, wxT("wrong listbox index") );
     if ( m_hasCheckBoxes )
     {
@@ -155,12 +157,12 @@ void wxListBox::SetString(unsigned int n, const wxString& s)
 
 void wxListBox::SetSelection(int n)
 {
-    return m_qtListWidget->setCurrentRow(n);
+    return GetQListWidget()->setCurrentRow(n);
 }
 
 int wxListBox::GetSelection() const
 {
-    return m_qtListWidget->currentIndex().row();
+    return GetQListWidget()->currentIndex().row();
 }
 
 void wxListBox::DoSetFirstItem(int n)
@@ -169,7 +171,7 @@ void wxListBox::DoSetFirstItem(int n)
 
 void wxListBox::DoSetSelection(int n, bool select)
 {
-    return m_qtListWidget->setCurrentRow(n, select ? QItemSelectionModel::Select : QItemSelectionModel::Deselect );
+    return GetQListWidget()->setCurrentRow(n, select ? QItemSelectionModel::Select : QItemSelectionModel::Deselect );
 }
 
 int wxListBox::DoInsertItems(const wxArrayStringsAdapter & items,
@@ -192,37 +194,32 @@ int wxListBox::DoInsertOneItem(const wxString& text, unsigned int pos)
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         item->setCheckState(Qt::Unchecked);
     }
-    m_qtListWidget->insertItem(pos, item);
+    GetQListWidget()->insertItem(pos, item);
 }
 
 void wxListBox::DoSetItemClientData(unsigned int n, void *clientData)
 {
-    QListWidgetItem* item = m_qtListWidget->item(n);
+    QListWidgetItem* item = GetQListWidget()->item(n);
     QVariant variant = qVariantFromValue(clientData);
     item->setData(Qt::UserRole, variant);
 }
 
 void *wxListBox::DoGetItemClientData(unsigned int n) const
 {
-    QListWidgetItem* item = m_qtListWidget->item(n);
+    QListWidgetItem* item = GetQListWidget()->item(n);
     QVariant variant = item->data(Qt::UserRole);
     return variant.value<void *>();
 }
 
 void wxListBox::DoClear()
 {
-    m_qtListWidget->clear();
+    GetQListWidget()->clear();
 }
 
 void wxListBox::DoDeleteOneItem(unsigned int pos)
 {
-    QListWidgetItem* item = m_qtListWidget->item(pos);
+    QListWidgetItem* item = GetQListWidget()->item(pos);
     delete item;
-}
-
-QListWidget *wxListBox::GetHandle() const
-{
-    return m_qtListWidget;
 }
 
 void wxListBox::QtSendEvent(wxEventType evtType, const QModelIndex &index, bool selected)
@@ -232,5 +229,5 @@ void wxListBox::QtSendEvent(wxEventType evtType, const QModelIndex &index, bool 
 
 QScrollArea *wxListBox::QtGetScrollBarsContainer() const
 {
-    return (QScrollArea *) m_qtListWidget;
+    return static_cast<QScrollArea *>(m_qtWindow);
 }

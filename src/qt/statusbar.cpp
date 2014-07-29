@@ -45,7 +45,9 @@ bool wxStatusBar::Create(wxWindow *parent, wxWindowID winid,
 {
     wxMISSING_IMPLEMENTATION( "wxStatusBar::Create parameters" );
 
-    m_qtStatusBar = new wxQtStatusBar( parent, this );
+    m_qtWindow = new wxQtStatusBar( parent, this );
+
+    // this there some reason we don't use QtCreateControl
 
     return true;
 }
@@ -95,25 +97,20 @@ void wxStatusBar::UpdateFields()
         //Set sizes
         int width = m_panes[i].GetWidth();
 
-        QLabel *pane = new QLabel( m_qtStatusBar );
+        QLabel *pane = new QLabel( GetQStatusBar() );
         m_qtPanes.append( pane );
 
         if ( width >= 0 )
         {
             //Fixed width field
             pane->setMinimumSize( QSize(width, 0) );
-            m_qtStatusBar->addWidget( pane );
+            GetQStatusBar()->addWidget( pane );
         }
         else
         {
-            m_qtStatusBar->addWidget( pane, -width );
+            GetQStatusBar()->addWidget( pane, -width );
         }
     }
-}
-
-QStatusBar *wxStatusBar::GetHandle() const
-{
-    return m_qtStatusBar;
 }
 
 //==============================================================================

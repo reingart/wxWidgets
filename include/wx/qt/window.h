@@ -18,10 +18,9 @@ class WXDLLIMPEXP_FWD_CORE wxQtShortcutHandler;
 
 /* wxQt specific notes:
  *
- * Remember to implement the Qt object getters on all subclasses:
- *  - GetHandle() returns the Qt object
+ * Remember to set m_qtWindow to the Qt Object on all subclasses
  *  - QtGetScrollBarsContainer() returns the widget where scrollbars are placed
- * For example, for wxFrame, GetHandle() is the QMainWindow,
+ *
  * QtGetScrollBarsContainer() is the central widget and QtGetContainer() is a widget
  * in a layout inside the central widget that also contains the scrollbars.
  * Return 0 from QtGetScrollBarsContainer() to disable SetScrollBar() and friends
@@ -109,7 +108,7 @@ public:
     virtual bool SetTransparent(wxByte alpha);
     virtual bool CanSetTransparent() { return true; }
 
-    virtual WXWidget GetHandle() const;
+    QWidget *GetHandle() const { return m_qtWindow; }
 
     virtual void SetDropTarget( wxDropTarget *dropTarget );
     
@@ -182,9 +181,10 @@ protected:
     virtual bool DoPopupMenu(wxMenu *menu, int x, int y);
 #endif // wxUSE_MENUS
 
+    QWidget *m_qtWindow;
+
 private:
     void Init();
-    QWidget *m_qtWindow;
     QScrollArea *m_qtContainer;
 
     wxScrollBar *m_horzScrollBar;

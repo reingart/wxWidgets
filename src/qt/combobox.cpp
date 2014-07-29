@@ -102,25 +102,25 @@ bool wxComboBox::Create(wxWindow *parent, wxWindowID id,
             const wxValidator& validator,
             const wxString& name )
 {
-    m_qtComboBox = new wxQtComboBox( parent, this );
+    m_qtWindow = new wxQtComboBox( parent, this );
     while ( n-- > 0 )
-        m_qtComboBox->addItem( wxQtConvertString( *choices++ ));
-    m_qtComboBox->setEditText( wxQtConvertString( value ));
+        GetQComboBox()->addItem( wxQtConvertString( *choices++ ));
+    GetQComboBox()->setEditText( wxQtConvertString( value ));
 
     return QtCreateControl( parent, id, pos, size, style, validator, name );
 }
 
 wxString wxComboBox::DoGetValue() const
 {
-    return wxQtConvertString( m_qtComboBox->currentText() );
+    return wxQtConvertString( GetQComboBox()->currentText() );
 }
 
 void wxComboBox::Popup()
 {
-     GetHandle()->showPopup();
+     GetQComboBox()->showPopup();
 }
 
 void wxComboBox::Dismiss()
 {
-    GetHandle()->hidePopup();
+    GetQComboBox()->hidePopup();
 }

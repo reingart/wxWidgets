@@ -32,12 +32,10 @@ public:
     virtual void SetValue(bool value);
     virtual bool GetValue() const;
 
-    virtual QCheckBox *GetHandle() const;
-
 protected:
 
 private:
-    QCheckBox *m_qtCheckBox;
+    QCheckBox *GetQCheckBox() const { return static_cast<QCheckBox *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxCheckBox);
 };

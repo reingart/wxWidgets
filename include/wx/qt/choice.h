@@ -56,9 +56,9 @@ public:
     virtual void SetSelection(int n);
     virtual int GetSelection() const;
 
-    virtual QComboBox *GetHandle() const;
-
 protected:
+    QComboBox *GetQComboBox() const { return static_cast<QComboBox *>(m_qtWindow); }
+
     virtual int DoInsertItems(const wxArrayStringsAdapter & items,
                               unsigned int pos,
                               void **clientData,
@@ -71,10 +71,7 @@ protected:
     virtual void DoClear();
     virtual void DoDeleteOneItem(unsigned int pos);
 
-    QComboBox *m_qtComboBox;
-
 private:
-
     DECLARE_DYNAMIC_CLASS(wxChoice)
 };
 

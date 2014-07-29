@@ -53,18 +53,12 @@ bool wxGauge::Create(wxWindow *parent,
             const wxValidator& validator,
             const wxString& name)
 {
-    m_qtProgressBar = new wxQtProgressBar( parent, this);
-    m_qtProgressBar->setOrientation( wxQtConvertOrientation( style, wxGA_HORIZONTAL ));
-    m_qtProgressBar->setRange( 0, range );
-    m_qtProgressBar->setTextVisible( style & wxGA_TEXT );
+    m_qtWindow = new wxQtProgressBar( parent, this);
+    GetQProgressBar()->setOrientation( wxQtConvertOrientation( style, wxGA_HORIZONTAL ));
+    GetQProgressBar()->setRange( 0, range );
+    GetQProgressBar()->setTextVisible( style & wxGA_TEXT );
 
     return QtCreateControl( parent, id, pos, size, style, validator, name );
-}
-
-
-QProgressBar *wxGauge::GetHandle() const
-{
-    return m_qtProgressBar;
 }
 
 // set/get the control range and value
@@ -72,20 +66,20 @@ QProgressBar *wxGauge::GetHandle() const
 void wxGauge::SetRange(int range)
 {
     // note that in wx minimun range is fixed at 0
-    m_qtProgressBar->setMaximum(range);
+    GetQProgressBar()->setMaximum(range);
 }
 
 int wxGauge::GetRange() const
 {
-    return m_qtProgressBar->maximum();
+    return GetQProgressBar()->maximum();
 }
 
 void wxGauge::SetValue(int pos)
 {
-    m_qtProgressBar->setValue(pos);
+    GetQProgressBar()->setValue(pos);
 }
 
 int wxGauge::GetValue() const
 {
-    return m_qtProgressBar->value();
+    return GetQProgressBar()->value();
 }

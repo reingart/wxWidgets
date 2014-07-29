@@ -34,7 +34,7 @@ bool wxListCtrl::Create(wxWindow *parent,
             const wxValidator& validator,
             const wxString& name)
 {
-    m_qtListWidget = new QListWidget( parent->GetHandle() );
+    m_qtWindow = new QListWidget( parent->GetHandle() );
 
     return wxControl::Create( parent, id, pos, size, style, validator, name );
 }
@@ -398,10 +398,4 @@ bool wxListCtrl::ScrollList(int dx, int dy)
 bool wxListCtrl::SortItems(wxListCtrlCompare fn, wxIntPtr data)
 {
     return false;
-}
-
-
-QListWidget *wxListCtrl::GetHandle() const
-{
-    return m_qtListWidget;
 }

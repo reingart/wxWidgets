@@ -32,9 +32,8 @@ public:
 
     void SetLabel(const wxString& label);
 
-    QLabel *GetHandle() const;
 private:
-    QLabel *m_qtLabel;
+    QLabel *GetQLabel() const { return static_cast<QLabel *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxStaticText );
 };

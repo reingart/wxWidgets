@@ -35,12 +35,8 @@ public:
     virtual void SetValue(bool value);
     virtual bool GetValue() const;
 
-    virtual QRadioButton *GetHandle() const;
-
-protected:
-
 private:
-    QRadioButton *m_qtRadioButton;
+    QRadioButton *GetQRadioButton() const { return static_cast<QRadioButton *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxRadioButton );
 };

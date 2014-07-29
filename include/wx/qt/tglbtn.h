@@ -36,9 +36,9 @@ public:
     virtual void SetValue(bool state);
     virtual bool GetValue() const;
 
-    virtual QPushButton *GetHandle() const;
-
 private:
+//    QPushButton *GetQPushButton() const { return static_cast<QPushButton *>(m_qtWindow); }
+
     DECLARE_DYNAMIC_CLASS(wxBitmapToggleButton)
 
 };
@@ -68,11 +68,6 @@ public:
 
     virtual void SetValue(bool state);
     virtual bool GetValue() const;
-
-    virtual QPushButton *GetHandle() const;
-
-private:
-
 };
 
 #endif // _WX_QT_TGLBTN_H_

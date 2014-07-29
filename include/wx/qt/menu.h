@@ -48,11 +48,9 @@ public:
     virtual void SetMenuLabel(size_t pos, const wxString& label);
     virtual wxString GetMenuLabel(size_t pos) const;
 
-    virtual QMenuBar *GetHandle() const;
+    QMenuBar *GetQMenuBar() const { return static_cast<QMenuBar *>(m_qtWindow); }
 
 private:
-    QMenuBar *m_qtMenuBar;
-
     wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxMenuBar);
 };
 

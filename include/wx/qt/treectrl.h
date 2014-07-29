@@ -112,8 +112,6 @@ public:
 
     virtual bool GetBoundingRect(const wxTreeItemId& item, wxRect& rect, bool textOnly = false) const;
 
-    virtual QTreeWidget *GetHandle() const;
-
 protected:
     virtual int DoGetItemState(const wxTreeItemId& item) const;
     virtual void DoSetItemState(const wxTreeItemId& item, int state);
@@ -133,7 +131,7 @@ protected:
     virtual wxTreeItemId DoTreeHitTest(const wxPoint& point, int& flags) const;
 
 private:
-    QTreeWidget *m_qtTreeWidget;
+    QTreeWidget *GetQTreeWidget() const { return static_cast<QTreeWidget *>(m_qtWindow); }
 
     DECLARE_DYNAMIC_CLASS(wxTreeCtrl)
 };

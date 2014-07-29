@@ -14,22 +14,21 @@
 // Take advantage of the Qt compile time polymorphy and use a template to avoid
 // copy&paste code for the usage of QSpinBox/QDoubleSpinBox.
 
+template < typename Widget >
+class wxQtSpinBoxBase;
+
 template < typename T, typename Widget >
 class WXDLLIMPEXP_CORE wxQtSpinCtrlBase : public wxSpinCtrlBase
 {
 public:
     wxQtSpinCtrlBase();
-    wxQtSpinCtrlBase( wxWindow *parent, wxWindowID id, const wxString& value,
-        const wxPoint& pos, const wxSize& size, long style,
-        T min, T max, T initial, T inc,
-        const wxString& name );
 
     bool Create( wxWindow *parent, wxWindowID id, const wxString& value,
         const wxPoint& pos, const wxSize& size, long style,
         T min, T max, T initial, T inc,
         const wxString& name );
 
-    virtual void SetValue(const wxString&) {}
+    void SetValue(const wxString&);
 
     virtual void SetSnapToTicks(bool snap_to_ticks);
     virtual bool GetSnapToTicks() const;
@@ -45,10 +44,8 @@ public:
     T GetMax() const;
     T GetIncrement() const;
 
-    virtual Widget *GetHandle() const;
-
 protected:
-    Widget *m_qtSpinBox;
+    wxQtSpinBoxBase<Widget> *GetQSpinBox() const { return static_cast< wxQtSpinBoxBase<Widget> *>(m_qtWindow); }
 
 };
 
@@ -75,8 +72,6 @@ public:
                 const wxString& name = wxT("wxSpinCtrl"));
     virtual int GetBase() const wxOVERRIDE { return m_base; }
     virtual bool SetBase(int base) wxOVERRIDE;
-    virtual void SetValue(const wxString & val);
-    virtual void SetValue(int val) { wxQtSpinCtrlBase::SetValue(val); }
 
 private:
     // Common part of all ctors.
@@ -117,10 +112,9 @@ public:
 
     virtual int GetBase() const wxOVERRIDE { return 10; }
     virtual bool SetBase(int WXUNUSED(base)) wxOVERRIDE { return false; }
-    virtual void SetValue(const wxString & val);
-    virtual void SetValue(double val) { wxQtSpinCtrlBase::SetValue(val); }
 
 private:
+
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxSpinCtrlDouble );
 };
 

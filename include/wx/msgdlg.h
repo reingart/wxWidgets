@@ -96,9 +96,6 @@ public:
         SetMessageDialogStyle(style);
     }
 
-    // virtual dtor for the base class
-    virtual ~wxMessageDialogBase() { }
-
     wxString GetCaption() const { return m_caption; }
 
     virtual void SetMessage(const wxString& message)

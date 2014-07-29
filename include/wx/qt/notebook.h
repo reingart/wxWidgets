@@ -45,14 +45,12 @@ public:
     int SetSelection(size_t nPage) { return DoSetSelection(nPage, SetSelection_SendEvent); }
     int ChangeSelection(size_t nPage) { return DoSetSelection(nPage); }
 
-    virtual QTabWidget *GetHandle() const;
-
 protected:
     virtual wxWindow *DoRemovePage(size_t page);
     int DoSetSelection(size_t nPage, int flags = 0);
 
 private:
-    QTabWidget *m_qtTabWidget;
+    QTabWidget *GetQTabWidget() const { return static_cast<QTabWidget *>(m_qtWindow); }
 
     // internal array to store imageId for each page:
     wxVector<int> m_images;

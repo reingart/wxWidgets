@@ -33,8 +33,6 @@ public:
                 const wxValidator& validator = wxDefaultValidator,
                 const wxString& name = wxGaugeNameStr);
 
-    virtual QProgressBar *GetHandle() const;
-
     // set/get the control range
     virtual void SetRange(int range);
     virtual int GetRange() const;
@@ -43,7 +41,7 @@ public:
     virtual int GetValue() const;
 
 private:
-    QProgressBar *m_qtProgressBar;
+    QProgressBar *GetQProgressBar() const { return static_cast<QProgressBar *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxGauge);
 };

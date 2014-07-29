@@ -12,11 +12,11 @@
 
 class wxQtToolBar;
 
-class WXDLLIMPEXP_CORE wxToolBar : public wxToolBarBase, public QObject
+class WXDLLIMPEXP_CORE wxToolBar : public wxToolBarBase
 {
 public:
 
-    wxToolBar() { Init(); }
+    wxToolBar() { }
     wxToolBar(wxWindow *parent,
               wxWindowID id,
               const wxPoint& pos = wxDefaultPosition,
@@ -24,14 +24,9 @@ public:
               long style = wxNO_BORDER | wxTB_HORIZONTAL,
               const wxString& name = wxToolBarNameStr)
     {
-        Init();
-
         Create(parent, id, pos, size, style, name);
     }
 
-    virtual ~wxToolBar();
-
-    void Init();
     bool Create(wxWindow *parent,
                 wxWindowID id,
                 const wxPoint& pos = wxDefaultPosition,
@@ -39,10 +34,9 @@ public:
                 long style = wxNO_BORDER | wxTB_HORIZONTAL,
                 const wxString& name = wxToolBarNameStr);
 
-    virtual wxToolBarToolBase *FindToolForPosition(wxCoord x, wxCoord y) const;
-    virtual QToolBar *QtToolBar() const;
+    virtual ~wxToolBar();
 
-    virtual WXWidget GetHandle() const { return QtToolBar(); }
+    virtual wxToolBarToolBase *FindToolForPosition(wxCoord x, wxCoord y) const;
 
     virtual void SetWindowStyleFlag( long style );
     virtual bool Realize() wxOVERRIDE;
@@ -69,9 +63,11 @@ protected:
                                           const wxString& label);
 
 private:
-    Qt::ToolButtonStyle GetButtonStyle();
+    QToolBar *GetQToolBar() const { return static_cast<QToolBar *>(m_qtWindow); }
 
-    QToolBar *m_qtToolBar;
+    Qt::ToolButtonStyle GetButtonStyle();
+    
+    DECLARE_DYNAMIC_CLASS(wxToolBar)
 };
 
 #endif // _WX_QT_TOOLBAR_H_

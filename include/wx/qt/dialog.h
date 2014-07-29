@@ -22,8 +22,6 @@ public:
             long style = wxDEFAULT_DIALOG_STYLE,
             const wxString &name = wxDialogNameStr );
 
-    virtual ~wxDialog();
-    
     bool Create( wxWindow *parent, wxWindowID id,
             const wxString &title,
             const wxPoint &pos = wxDefaultPosition,
@@ -35,10 +33,8 @@ public:
     virtual void EndModal(int retCode);
     virtual bool IsModal() const;
 
-    virtual QDialog *GetHandle() const;
-
 private:
-    QDialog *m_qtDialog;
+    QDialog *GetQDialog() const { return static_cast<QDialog *>(m_qtWindow); }
 
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxDialog );
 };

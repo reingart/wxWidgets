@@ -33,7 +33,7 @@ bool wxStaticBitmap::Create( wxWindow *parent,
              long style,
              const wxString& name)
 {
-    m_qtLabel = new QLabel( parent->GetHandle() );
+    m_qtWindow = new QLabel( parent->GetHandle() );
     SetBitmap( label );
 
     return QtCreateControl( parent, id, pos, size, style, wxDefaultValidator, name );
@@ -47,17 +47,20 @@ static void SetPixmap( QLabel *label, const QPixmap *pixMap )
 
 void wxStaticBitmap::SetIcon(const wxIcon& icon)
 {
-    SetPixmap( m_qtLabel, icon.GetHandle() );
+    SetPixmap( GetQLabel(), icon.GetHandle() );
 }
 
 void wxStaticBitmap::SetBitmap(const wxBitmap& bitmap)
 {
-    SetPixmap( m_qtLabel, bitmap.GetHandle() );
+    SetPixmap( GetQLabel(), bitmap.GetHandle() );
 }
 
 wxBitmap wxStaticBitmap::GetBitmap() const
 {
-    return wxBitmap( *m_qtLabel->pixmap() );
+    const QPixmap *pixmap = GetQLabel()->pixmap();
+    if(pixmap)
+        return wxBitmap( *GetQLabel()->pixmap() );
+    return wxBitmap();
 }
 
 wxIcon wxStaticBitmap::GetIcon() const
@@ -65,9 +68,4 @@ wxIcon wxStaticBitmap::GetIcon() const
     wxIcon icon;
     icon.CopyFromBitmap( GetBitmap() );
     return icon;
-}
-
-QLabel *wxStaticBitmap::GetHandle() const
-{
-    return m_qtLabel;
 }
