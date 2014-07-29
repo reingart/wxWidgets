@@ -49,14 +49,9 @@ public:
     wxQtEventSignalHandler( wxWindow *parent, Handler *handler )
         : Widget( parent != NULL ? parent->GetHandle() : NULL )
         , wxQtSignalHandler< Handler >( handler )
-    {
-//        printf("Object created: %p\n", this);
-    }
+    { }
 
-    ~wxQtEventSignalHandler()
-    {
-//        printf("Object destroyed: %p\n", this);
-    }
+    ~wxQtEventSignalHandler() { }
 
 protected:
     /* Not implemented here: wxHelpEvent, wxIdleEvent wxJoystickEvent,
@@ -229,7 +224,7 @@ protected:
         else
             event->accept();
     }
-    
+
     //wxMouseEvent
     virtual void wheelEvent ( QWheelEvent * event )
     {
