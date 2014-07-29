@@ -26,7 +26,7 @@ public:
 private:
     QColorDialog *GetQColorDialog() const { return static_cast<QColorDialog *>(m_qtWindow); }
 
-    static wxColourData s_data;
+    wxColourData m_data;
 };
 
 #endif // _WX_QT_COLORDLG_H_
