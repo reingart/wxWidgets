@@ -8,6 +8,8 @@
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
 
+#if wxUSE_MDI
+
 #include "wx/mdi.h"
 
 wxMDIParentFrame::wxMDIParentFrame()
@@ -85,3 +87,4 @@ bool wxMDIClientWindow::CreateClient(wxMDIParentFrame *WXUNUSED(parent), long WX
     return false;
 }
 
+#endif // wxUSE_MDI

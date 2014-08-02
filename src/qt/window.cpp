@@ -147,7 +147,7 @@ void wxWindow::Init()
 wxWindow::wxWindow()
 {
     Init();
-
+    Create( NULL, wxID_ANY );
 }
 
 
@@ -155,7 +155,6 @@ wxWindow::wxWindow(wxWindow *parent, wxWindowID id, const wxPoint& pos, const wx
     long style, const wxString& name)
 {
     Init();
-
     Create( parent, id, pos, size, style, name );
 }
 
@@ -225,7 +224,8 @@ bool wxWindow::Create( wxWindow * parent, wxWindowID id, const wxPoint & pos,
     if ( !wxWindowBase::CreateBase( parent, id, pos, size, style, wxDefaultValidator, name ))
         return false;
 
-    parent->AddChild( this );
+    if (parent)
+        parent->AddChild( this );
 
     DoMoveWindow( pos.x, pos.y, size.GetWidth(), size.GetHeight() );
 
@@ -471,8 +471,8 @@ wxScrollBar *wxWindow::QtGetScrollBar( int orientation ) const
 wxScrollBar *wxWindow::QtSetScrollBar( int orientation, wxScrollBar *scrollBar )
 {
     QScrollArea *scrollArea = QtGetScrollBarsContainer();
-    wxCHECK_MSG( scrollArea, NULL, "Window without scrolling area" );
 
+    wxCHECK_MSG( scrollArea, NULL, "Window without scrolling area" );
     // Create a new scrollbar if needed
     if ( !scrollBar )
     {
@@ -542,7 +542,8 @@ void wxWindow::SetScrollPos( int orientation, int pos, bool WXUNUSED( refresh ))
 int wxWindow::GetScrollPos( int orientation ) const
 {
     wxScrollBar *scrollBar = QtGetScrollBar( orientation );
-    wxCHECK_MSG( scrollBar, 0, "Invalid scrollbar" );
+    if (!scrollBar)
+        return 0;
     
     return scrollBar->GetThumbPosition();
 }
@@ -550,7 +551,8 @@ int wxWindow::GetScrollPos( int orientation ) const
 int wxWindow::GetScrollThumb( int orientation ) const
 {
     wxScrollBar *scrollBar = QtGetScrollBar( orientation );
-    wxCHECK_MSG( scrollBar, 0, "Invalid scrollbar" );
+    if (!scrollBar)
+        return 0;
     
     return scrollBar->GetThumbSize();
 }
@@ -558,7 +560,8 @@ int wxWindow::GetScrollThumb( int orientation ) const
 int wxWindow::GetScrollRange( int orientation ) const
 {
     wxScrollBar *scrollBar = QtGetScrollBar( orientation );
-    wxCHECK_MSG( scrollBar, 0, "Invalid scrollbar" );
+    if (!scrollBar)
+        return 0;
     
     return scrollBar->GetRange();
 }
@@ -704,9 +707,22 @@ void wxWindow::SetWindowStyleFlag( long style )
 //    }
 }
 
-void wxWindow::SetExtraStyle( long WXUNUSED( exStyle ) )
+void wxWindow::SetExtraStyle( long exStyle )
 {
-    wxMISSING_IMPLEMENTATION( __FUNCTION__ );
+    long exStyleOld = GetExtraStyle();
+    if ( exStyle == exStyleOld )
+        return;
+
+    // update the internal variable
+    wxWindowBase::SetExtraStyle(exStyle);
+
+    Qt::WindowFlags flags = m_qtWindow->windowFlags();
+
+    if (!(exStyle & wxWS_EX_CONTEXTHELP) != !(flags & Qt::WindowContextHelpButtonHint))
+    {
+        flags ^= Qt::WindowContextHelpButtonHint;
+        m_qtWindow->setWindowFlags(flags);
+    }
 }
 
 
