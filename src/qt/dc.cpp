@@ -63,6 +63,7 @@ void wxQtDCImpl::QtPreparePainter( )
     {
         m_qtPainter->setPen( wxPen().GetHandle() );
         m_qtPainter->setBrush( wxBrush().GetHandle() );
+        m_qtPainter->setFont( wxFont().GetHandle() );
     }
     else
     {
@@ -82,14 +83,14 @@ bool wxQtDCImpl::CanGetTextExtent() const
 
 void wxQtDCImpl::DoGetSize(int *width, int *height) const
 {
-    *width  = m_qtPainter->device()->width();
-    *height = m_qtPainter->device()->height();
+    if (width)  *width  = m_qtPainter->device()->width();
+    if (height) *height = m_qtPainter->device()->height();
 }
 
 void wxQtDCImpl::DoGetSizeMM(int* width, int* height) const
 {
-    *width  = m_qtPainter->device()->widthMM();
-    *height = m_qtPainter->device()->heightMM();
+    if (width)  *width  = m_qtPainter->device()->widthMM();
+    if (height) *height = m_qtPainter->device()->heightMM();
 }
 
 int wxQtDCImpl::GetDepth() const
@@ -105,8 +106,9 @@ wxSize wxQtDCImpl::GetPPI() const
 void wxQtDCImpl::SetFont(const wxFont& font)
 {
     m_font = font;
-    
-    m_qtPainter->setFont(font.GetHandle());
+
+    if (m_qtPainter->isActive())
+        m_qtPainter->setFont(font.GetHandle());
 }
 
 void wxQtDCImpl::SetPen(const wxPen& pen)
@@ -153,7 +155,8 @@ void wxQtDCImpl::SetBackground(const wxBrush& brush)
 {
     m_backgroundBrush = brush;
     
-    m_qtPainter->setBackground(brush.GetHandle());
+    if (m_qtPainter->isActive())
+        m_qtPainter->setBackground(brush.GetHandle());
 }
 
 void wxQtDCImpl::SetBackgroundMode(int mode)
@@ -498,8 +501,17 @@ void wxQtDCImpl::DoDrawEllipticArc(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     y += penWidth / 2;
     w -= penWidth;
     h -= penWidth;
-    
-    m_qtPainter->drawPie( x, y, w, h, (int)( sa * 16 ), (int)( ( ea - sa ) * 16 ) );
+
+    double spanAngle = sa - ea;
+    if (spanAngle < -180)
+        spanAngle += 360;
+    if (spanAngle > 180)
+        spanAngle -= 360;
+
+    if ( spanAngle == 0 )
+        m_qtPainter->drawEllipse( x, y, w, h );
+    else
+        m_qtPainter->drawPie( x, y, w, h, (int)( sa * 16 ), (int)( ( ea - sa ) * 16 ) );
 }
 
 void wxQtDCImpl::DoDrawRectangle(wxCoord x, wxCoord y, wxCoord width, wxCoord height)
@@ -741,7 +753,11 @@ void wxQtDCImpl::DoDrawLines(int n, const wxPoint points[],
         }
 
         m_qtPainter->translate(xoffset, yoffset);
+
+        QBrush savebrush = m_qtPainter->brush();
+        m_qtPainter->setBrush(Qt::NoBrush);
         m_qtPainter->drawPath(path);
+        m_qtPainter->setBrush(savebrush);
 
         // Reset transform
         ComputeScaleAndOrigin();

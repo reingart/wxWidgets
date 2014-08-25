@@ -19,11 +19,12 @@ class WXDLLIMPEXP_CORE wxCursor : public wxGDIObject
 public:
     wxCursor() { }
     wxCursor( const wxCursor & );
-    wxCursor( const wxImage& image ) { InitFromImage(image); }
-    wxCursor( const wxString& name,
-              wxBitmapType type = wxCURSOR_DEFAULT_TYPE,
-              int hotSpotX = 0, int hotSpotY = 0 );
-    wxCursor(wxStockCursor id) { InitFromStock(id); }
+#if wxUSE_IMAGE
+    wxCursor( const wxImage & image );
+    wxCursor(const wxString& name,
+             wxBitmapType type = wxCURSOR_DEFAULT_TYPE,
+             int hotSpotX = 0, int hotSpotY = 0);
+#endif
 #if WXWIN_COMPATIBILITY_2_8
     wxCursor(int id) { InitFromStock((wxStockCursor)id); }
 #endif

@@ -56,9 +56,10 @@ public:
 
     virtual QGLWidget *GetHandle() const { return static_cast<QGLWidget *>(m_qtWindow); }
 
+    virtual bool CanBeChildOfScrollBars() { return false; }
+
 private:
 
-//    DECLARE_EVENT_TABLE()
     DECLARE_CLASS(wxGLCanvas)
 };
 

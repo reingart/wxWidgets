@@ -81,9 +81,9 @@ void wxQtShortcutHandler::activated()
 
 //##############################################################################
 
-wxBEGIN_EVENT_TABLE( wxWindow, wxWindowBase )
-wxEND_EVENT_TABLE()
-
+#ifdef __WXUNIVERSAL__
+    IMPLEMENT_ABSTRACT_CLASS(wxWindow, wxWindowBase)
+#endif // __WXUNIVERSAL__
 
 // We use the QObject property capabilities to store the wxWindow pointer, so we
 // don't need to use a separate lookup table. We also want to use it in the proper
@@ -222,12 +222,18 @@ bool wxWindowQt::Create( wxWindowQt * parent, wxWindowID id, const wxPoint & pos
         }
     }
 
+    m_qtWindow->setMouseTracking(true);
+
     if ( !wxWindowBase::CreateBase( parent, id, pos, size, style, wxDefaultValidator, name ))
         return false;
 
     parent->AddChild( this );
 
-    DoMoveWindow( pos.x, pos.y, size.GetWidth(), size.GetHeight() );
+    wxPoint p;
+    if(pos != wxDefaultPosition)
+        p = pos;
+
+    DoMoveWindow( p.x, p.y, size.GetWidth(), size.GetHeight() );
 
     PostCreation();
 
@@ -270,13 +276,17 @@ void wxWindowQt::PostCreation(bool generic)
     SetBackgroundColour(wxColour(GetHandle()->palette().background().color()));
     SetForegroundColour(wxColour(GetHandle()->palette().foreground().color()));
 
+    GetHandle()->setFont( wxWindowBase::GetFont().GetHandle() );
 }
 
 void wxWindowQt::AddChild( wxWindowBase *child )
 {
-    // Make sure all children are children of the inner scroll area widget (if any):
+    // Make sure all children are children of the inner scroll area widget (if any),
+    // but not for opengl widgets
 
-    if ( QtGetScrollBarsContainer() )
+    if( (!child->IsKindOf(CLASSINFO(wxWindow)) ||
+         ((wxWindow*)child)->CanBeChildOfScrollBars()) &&
+        QtGetScrollBarsContainer() )
         QtReparent( child->GetHandle(), QtGetScrollBarsContainer()->viewport() );
 
     wxWindowBase::AddChild( child );
@@ -418,9 +428,16 @@ void wxWindowQt::Refresh( bool WXUNUSED( eraseBackground ), const wxRect *rect )
     
 bool wxWindowQt::SetFont( const wxFont &font )
 {
-    GetHandle()->setFont( font.GetHandle() );
-    
-    return ( true );
+    // SetFont may be called before Create, so the font is stored
+    // by the base class, and set in PostCreation
+
+    if (GetHandle())
+    {
+        GetHandle()->setFont( font.GetHandle() );
+        return true;
+    }
+
+    return wxWindowBase::SetFont(font);
 }
 
 
@@ -782,8 +799,8 @@ void wxWindowQt::DoGetSize(int *width, int *height) const
     wxASSERT( size.width() == rect.width() );
     wxASSERT( size.height() == rect.height() );
 
-    *width = rect.width();
-    *height = rect.height();
+    if (width)  *width = rect.width();
+    if (height) *height = rect.height();
 }
 
     
@@ -808,15 +825,30 @@ void wxWindowQt::DoSetSize(int x, int y, int width, int height, int sizeFlags )
         if ( height == wxDefaultCoord && ( sizeFlags & wxSIZE_AUTO_HEIGHT ))
             height = BEST_SIZE.y;
     }
+
+    int w, h;
+    GetSize(&w, &h);
+    if (width == -1)
+        width = w;
+    if (height == -1)
+        height = h;
+
     DoMoveWindow( x, y, width, height );
+
+    // An annoying feature of Qt
+    // if a control is created with size of zero, it is set as hidden by qt
+    // if it is then resized, in some cases it remains hidden, so it
+    // needs to be shown here
+    if (!m_qtWindow->isVisible() && IsShown())
+        m_qtWindow->show();
 }
 
 
 void wxWindowQt::DoGetClientSize(int *width, int *height) const
 {
     QRect geometry = GetHandle()->geometry();
-    *width = geometry.width();
-    *height = geometry.height();
+    if (width)  *width = geometry.width();
+    if (height) *height = geometry.height();
 }
 
     
@@ -940,7 +972,7 @@ bool wxWindowQt::IsTransparentBackgroundSupported(wxString* WXUNUSED(reason)) co
 bool wxWindowQt::SetTransparent(wxByte alpha)
 {
     // For Qt, range is between 1 (opaque) and 0 (transparent)
-    GetHandle()->setWindowOpacity(1 - alpha/255.0);
+    GetHandle()->setWindowOpacity(alpha/255.0);
     return true;
 }
 
@@ -1090,6 +1122,12 @@ bool wxWindowQt::QtHandleWheelEvent ( QWidget *WXUNUSED( handler ), QWheelEvent 
 
 bool wxWindowQt::QtHandleKeyEvent ( QWidget *WXUNUSED( handler ), QKeyEvent *event )
 {
+    // qt sends keyup and keydown events for autorepeat, but this is not
+    // normal for wx which only sends repeated keydown events
+    // discard repeated keyup events
+    if(event->isAutoRepeat() && event->type() == QEvent::KeyRelease)
+        return true;
+
 #if wxUSE_ACCEL
     if ( m_processingShortcut )
     {

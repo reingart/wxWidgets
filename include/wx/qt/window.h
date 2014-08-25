@@ -149,6 +149,7 @@ public:
 #endif // wxUSE_ACCEL
 
     virtual QAbstractScrollArea *QtGetScrollBarsContainer() const;
+    virtual bool CanBeChildOfScrollBars() { return true; }
 
 protected:
     virtual void DoGetTextExtent(const wxString& string,
@@ -211,7 +212,6 @@ private:
     bool m_processingShortcut;
 #endif // wxUSE_ACCEL
 
-    wxDECLARE_EVENT_TABLE();
     wxDECLARE_DYNAMIC_CLASS_NO_COPY( wxWindowQt );
 };
 

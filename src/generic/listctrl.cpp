@@ -965,7 +965,9 @@ bool wxListHeaderWindow::Create( wxWindow *win,
     Init();
 
     m_owner = owner;
+#if WXWIN_COMPATIBILITY_2_8
     m_resizeCursor = new wxCursor( wxCURSOR_SIZEWE );
+#endif
 
 #if _USE_VISATTR
     wxVisualAttributes attr = wxPanel::GetClassDefaultAttributes();
